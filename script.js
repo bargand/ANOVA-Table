@@ -16,23 +16,33 @@ function generateTable() {
 
 function calculateTotals() {
   let treatments = document.getElementById("treatmentCount").value;
-  let replications = 3; // Fixed as per table structure
+  let replications = 3;
   let grandTotal = 0;
   let colTotals = [0, 0, 0];
   let sumOfSquares = 0;
   let sumOfSquaresFormula = "";
+  let treatmentSums = [];
+  let treatmentSquaresFormula = "";
+  let replicationSquaresFormula = "";
+
   for (let i = 1; i <= treatments; i++) {
     let rowTotal = 0;
     for (let j = 1; j <= 3; j++) {
-      let val = parseFloat(document.getElementById(`V${i}R${j}`).value) || 0;
+      let val =
+        parseFloat(document.getElementById(`V${i}R${j}`).value) || 0;
       rowTotal += val;
       colTotals[j - 1] += val;
       sumOfSquares += val * val;
-      sumOfSquaresFormula += (sumOfSquaresFormula ? " + " : "") + `${val}²`;
+      sumOfSquaresFormula +=
+        (sumOfSquaresFormula ? " + " : "") + `${val}²`;
     }
+    treatmentSums.push(rowTotal);
+    treatmentSquaresFormula +=
+      (treatmentSquaresFormula ? " + " : "") + `${rowTotal}²`;
     document.getElementById(`V${i}Total`).innerText = rowTotal;
     grandTotal += rowTotal;
   }
+
   document.getElementById("R1Total").innerText = colTotals[0];
   document.getElementById("R2Total").innerText = colTotals[1];
   document.getElementById("R3Total").innerText = colTotals[2];
@@ -54,4 +64,46 @@ function calculateTotals() {
     sumOfSquaresFormula;
   document.getElementById("totalSumOfSquares").innerText =
     totalSumOfSquares.toFixed(2);
+
+  let treatmentSumOfSquares = treatmentSums.reduce(
+    (sum, value) => sum + value ** 2,
+    0
+  );
+  let finalTreatmentSum =
+    treatmentSumOfSquares / replications - correctionFactor;
+  document.getElementById("treatmentSumOfSquares").innerText =
+    finalTreatmentSum.toFixed(2);
+  document.getElementById(
+    "treatmentSquaresFormula"
+  ).innerText = `(${treatmentSquaresFormula}) / ${replications} - ${correctionFactor.toFixed(
+    2
+  )}`;
+
+  let replicationSumOfSquares = colTotals.reduce(
+    (sum, value) => sum + value ** 2,
+    0
+  );
+  let finalReplicationSum =
+    replicationSumOfSquares / treatments - correctionFactor;
+  document.getElementById("replicationSumOfSquares").innerText =
+    finalReplicationSum.toFixed(2);
+  document.getElementById("replicationSquaresFormula").innerText = `(${
+    colTotals[0]
+  }² + ${colTotals[1]}² + ${
+    colTotals[2]
+  }²) / ${treatments} - ${correctionFactor.toFixed(2)}`;
+
+  let errorSumOfSquares =
+    totalSumOfSquares - (finalTreatmentSum + finalReplicationSum);
+  document.getElementById("errorSumOfSquares").innerText =
+    errorSumOfSquares.toFixed(2);
+
+  // **Update Calculation Display for ESS**
+  document.getElementById(
+    "errorSumCalculation"
+  ).innerHTML = `(${totalSumOfSquares.toFixed(
+    2
+  )}) - (${finalTreatmentSum.toFixed(2)} + ${finalReplicationSum.toFixed(
+    2
+  )}) = ${errorSumOfSquares.toFixed(2)}`;
 }
