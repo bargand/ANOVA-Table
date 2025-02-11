@@ -82,6 +82,12 @@
       <p><strong>TrSS = (Sum of Squares of Treatment Totals / 3) - C.F</strong></p>
       <p><strong>Calculation:</strong> (<span id="treatmentSquaresFormula">0</span>) = <span id="treatmentSumOfSquares">0</span></p>
     </div>
+
+    <div class="formula-box">
+      <h3>Replication Sum of Squares (RSS) Formula</h3>
+      <p><strong>RSS = (Sum of Squares of Replication Totals / Number of Treatments) - C.F</strong></p>
+      <p><strong>Calculation:</strong> (<span id="replicationSquaresFormula">0</span>) = <span id="replicationSumOfSquares">0</span></p>
+    </div>
     <script>
       function generateTable() {
         let treatments = document.getElementById("treatmentCount").value;
@@ -108,6 +114,7 @@
         let sumOfSquaresFormula = "";
         let treatmentSums = [];
         let treatmentSquaresFormula = "";
+        let replicationSquaresFormula = "";
     
         for (let i = 1; i <= treatments; i++) {
           let rowTotal = 0;
@@ -144,6 +151,11 @@
         let finalTreatmentSum = (treatmentSumOfSquares / replications) - correctionFactor;
         document.getElementById("treatmentSumOfSquares").innerText = finalTreatmentSum.toFixed(2);
         document.getElementById("treatmentSquaresFormula").innerText = `(${treatmentSquaresFormula}) / ${replications} - ${correctionFactor.toFixed(2)}`;
+    
+        let replicationSumOfSquares = colTotals.reduce((sum, value) => sum + value ** 2, 0);
+        let finalReplicationSum = (replicationSumOfSquares / treatments) - correctionFactor;
+        document.getElementById("replicationSumOfSquares").innerText = finalReplicationSum.toFixed(2);
+        document.getElementById("replicationSquaresFormula").innerText = `(${colTotals[0]}² + ${colTotals[1]}² + ${colTotals[2]}²) / ${treatments} - ${correctionFactor.toFixed(2)}`;
       }
     </script>
   </body>
