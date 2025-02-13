@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ANOVA Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      table {
+        margin: 20px auto;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: center;
+      }
+      input {
+        width: 50px;
+        text-align: center;
+      }
+      button {
+        margin: 10px;
+        padding: 10px;
+      }
+      .summary {
+        margin-top: 20px;
+      }
+      .formula-box {
+        border: 1px solid black;
+        padding: 10px;
+        width: 60%;
+        margin: 20px auto;
+        background-color: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>ANOVA Table Generator</h2>
+    <label for="treatmentCount">Enter Number of Treatments:</label>
+    <input type="number" id="treatmentCount" min="2" max="10" value="4" />
+    <button onclick="generateTable()">Generate Table</button>
+    <div id="tableContainer"></div>
+
+    <div class="summary">
+      <p>Number of Replications (R): <span id="replicationCount">3</span></p>
+      <p>Number of Treatments (T): <span id="treatmentNumber">0</span></p>
+      <p>Grand Total (GT): <span id="finalGrandTotal">0</span></p>
+    </div>
+
+    <div class="formula-box">
+      <h3>Correction Factor (C.F) Formula</h3>
+      <p><strong>C.F = (GT²) / (N)</strong></p>
+      <p>Where,</p>
+      <ul>
+        <li>GT = Grand Total</li>
+        <li>N = T × R (Total number of observations)</li>
+      </ul>
+      <p>
+        <strong>Calculation:</strong> (<span id="correctionFactorFormula"
+          >0</span
+        >) = <span id="correctionFactor">0</span>
+      </p>
+    </div>
+
+    <div class="formula-box">
+      <h3>Total Sum of Squares (TSS) Formula</h3>
+      <p><strong>TSS = (Sum of Squares of all values) - C.F</strong></p>
+      <p>
+        <strong>Calculation:</strong> (<span id="sumOfSquaresFormula">0</span>)
+        - (<span id="correctionFactorValue">0</span>) =
+        <span id="totalSumOfSquares">0</span>
+      </p>
+    </div>
+
+    <div class="formula-box">
+      <h3>Treatment Sum of Squares (TrSS) Formula</h3>
+      <p>
+        <strong>TrSS = (Sum of Squares of Treatment Totals / 3) - C.F</strong>
+      </p>
+      <p>
+        <strong>Calculation:</strong> (<span id="treatmentSquaresFormula"
+          >0</span
+        >) = <span id="treatmentSumOfSquares">0</span>
+      </p>
+    </div>
+
+    <div class="formula-box">
+      <h3>Replication Sum of Squares (RSS) Formula</h3>
+      <p>
+        <strong
+          >RSS = (Sum of Squares of Replication Totals / Number of Treatments) -
+          C.F</strong
+        >
+      </p>
+      <p>
+        <strong>Calculation:</strong> (<span id="replicationSquaresFormula"
+          >0</span
+        >) = <span id="replicationSumOfSquares">0</span>
+      </p>
+    </div>
+
+    <div class="formula-box">
+      <h3>Error Sum of Squares (ESS) Formula</h3>
+      <p><strong>ESS = TSS - (TrSS + RSS)</strong></p>
+      <p>
+        <strong>Calculation:</strong>
+        <span id="errorSumCalculation"
+          >(<span id="totalSumOfSquares">0</span>) - (<span
+            id="treatmentSumOfSquares"
+            >0</span
+          >
+          + <span id="replicationSumOfSquares">0</span>) =
+          <span id="errorSumOfSquares">0</span></span
+        >
+      </p>
+    </div>
+
+    <script>
+      function generateTable() {
+        let treatments = document.getElementById("treatmentCount").value;
+        document.getElementById("treatmentNumber").innerText = treatments;
+        let tableHTML = `<table><tr><th></th><th>R<sub>1</sub></th><th>R<sub>2</sub></th><th>R<sub>3</sub></th><th>Total</th></tr>`;
+        for (let i = 1; i <= treatments; i++) {
+          tableHTML += `<tr><td>V<sub>${i}</sub></td>`;
+          for (let j = 1; j <= 3; j++) {
+            tableHTML += `<td><input type='number' id='V${i}R${j}' oninput='calculateTotals()'></td>`;
+          }
+          tableHTML += `<td id='V${i}Total'>0</td></tr>`;
+        }
+        tableHTML += `<tr><td>Total</td><td id='R1Total'>0</td><td id='R2Total'>0</td><td id='R3Total'>0</td><td id='grandTotal'>0</td></tr>`;
+        tableHTML += `</table>`;
+        document.getElementById("tableContainer").innerHTML = tableHTML;
+      }
+
+      function calculateTotals() {
+        let treatments = document.getElementById("treatmentCount").value;
+        let replications = 3;
+        let grandTotal = 0;
+        let colTotals = [0, 0, 0];
+        let sumOfSquares = 0;
+        let sumOfSquaresFormula = "";
+        let treatmentSums = [];
+        let treatmentSquaresFormula = "";
+        let replicationSquaresFormula = "";
+
+        for (let i = 1; i <= treatments; i++) {
+          let rowTotal = 0;
+          for (let j = 1; j <= 3; j++) {
+            let val =
+              parseFloat(document.getElementById(`V${i}R${j}`).value) || 0;
+            rowTotal += val;
+            colTotals[j - 1] += val;
+            sumOfSquares += val * val;
+            sumOfSquaresFormula +=
+              (sumOfSquaresFormula ? " + " : "") + `${val}²`;
+          }
+          treatmentSums.push(rowTotal);
+          treatmentSquaresFormula +=
+            (treatmentSquaresFormula ? " + " : "") + `${rowTotal}²`;
+          document.getElementById(`V${i}Total`).innerText = rowTotal;
+          grandTotal += rowTotal;
+        }
+
+        document.getElementById("R1Total").innerText = colTotals[0];
+        document.getElementById("R2Total").innerText = colTotals[1];
+        document.getElementById("R3Total").innerText = colTotals[2];
+        document.getElementById("grandTotal").innerText = grandTotal;
+        document.getElementById("finalGrandTotal").innerText = grandTotal;
+
+        let N = treatments * replications;
+        let correctionFactor = grandTotal ** 2 / N;
+        document.getElementById("correctionFactor").innerText =
+          correctionFactor.toFixed(2);
+        document.getElementById(
+          "correctionFactorFormula"
+        ).innerText = `${grandTotal}² / ${N}`;
+        document.getElementById("correctionFactorValue").innerText =
+          correctionFactor.toFixed(2);
+
+        let totalSumOfSquares = sumOfSquares - correctionFactor;
+        document.getElementById("sumOfSquaresFormula").innerText =
+          sumOfSquaresFormula;
+        document.getElementById("totalSumOfSquares").innerText =
+          totalSumOfSquares.toFixed(2);
+
+        let treatmentSumOfSquares = treatmentSums.reduce(
+          (sum, value) => sum + value ** 2,
+          0
+        );
+        let finalTreatmentSum =
+          treatmentSumOfSquares / replications - correctionFactor;
+        document.getElementById("treatmentSumOfSquares").innerText =
+          finalTreatmentSum.toFixed(2);
+        document.getElementById(
+          "treatmentSquaresFormula"
+        ).innerText = `(${treatmentSquaresFormula}) / ${replications} - ${correctionFactor.toFixed(
+          2
+        )}`;
+
+        let replicationSumOfSquares = colTotals.reduce(
+          (sum, value) => sum + value ** 2,
+          0
+        );
+        let finalReplicationSum =
+          replicationSumOfSquares / treatments - correctionFactor;
+        document.getElementById("replicationSumOfSquares").innerText =
+          finalReplicationSum.toFixed(2);
+        document.getElementById("replicationSquaresFormula").innerText = `(${
+          colTotals[0]
+        }² + ${colTotals[1]}² + ${
+          colTotals[2]
+        }²) / ${treatments} - ${correctionFactor.toFixed(2)}`;
+
+        let errorSumOfSquares =
+          totalSumOfSquares - (finalTreatmentSum + finalReplicationSum);
+        document.getElementById("errorSumOfSquares").innerText =
+          errorSumOfSquares.toFixed(2);
+
+        // Update Calculation Display for ESS
+        document.getElementById(
+          "errorSumCalculation"
+        ).innerHTML = `(${totalSumOfSquares.toFixed(
+          2
+        )}) - (${finalTreatmentSum.toFixed(2)} + ${finalReplicationSum.toFixed(
+          2
+        )}) = ${errorSumOfSquares.toFixed(2)}`;
+      }
+    </script>
+  </body>
+</html>
