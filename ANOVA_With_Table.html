@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ANOVA Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+      }
+      table {
+        margin: 20px auto;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 10px;
+        text-align: center;
+      }
+      input {
+        width: 50px;
+        text-align: center;
+      }
+      button {
+        margin: 10px;
+        padding: 10px;
+      }
+      .summary {
+        margin-top: 20px;
+      }
+      .formula-box {
+        border: 1px solid black;
+        padding: 10px;
+        width: 60%;
+        margin: 20px auto;
+        background-color: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>ANOVA Table Generator</h2>
+    <label for="treatmentCount">Enter Number of Treatments:</label>
+    <input type="number" id="treatmentCount" min="2" max="10" value="4" />
+    <button onclick="generateTable()">Generate Table</button>
+    <div id="tableContainer"></div>
+
+    <button onclick="calculateTotals()">Calculate ANOVA</button>
+
+    <div class="summary">
+      <p>Number of Replications (R): <span id="replicationCount">3</span></p>
+      <p>Number of Treatments (T): <span id="treatmentNumber">0</span></p>
+      <p>Grand Total (GT): <span id="finalGrandTotal">0</span></p>
+    </div>
+
+    <div id="anovaResults"></div>
+
+    <script>
+      function generateTable() {
+        let treatments = document.getElementById("treatmentCount").value;
+        document.getElementById("treatmentNumber").innerText = treatments;
+        let tableHTML = `<table><tr><th></th><th>R<sub>1</sub></th><th>R<sub>2</sub></th><th>R<sub>3</sub></th><th>Total</th></tr>`;
+        for (let i = 1; i <= treatments; i++) {
+          tableHTML += `<tr><td>V<sub>${i}</sub></td>`;
+          for (let j = 1; j <= 3; j++) {
+            tableHTML += `<td><input type='number' id='V${i}R${j}'></td>`;
+          }
+          tableHTML += `<td id='V${i}Total'>0</td></tr>`;
+        }
+        tableHTML += `<tr><td>Total</td><td id='R1Total'>0</td><td id='R2Total'>0</td><td id='R3Total'>0</td><td id='grandTotal'>0</td></tr>`;
+        tableHTML += `</table>`;
+        document.getElementById("tableContainer").innerHTML = tableHTML;
+      }
+
+      function calculateTotals() {
+        let treatments = parseInt(document.getElementById("treatmentCount").value);
+        let replications = 3;
+        let grandTotal = 0;
+        let colTotals = [0, 0, 0];
+        let sumOfSquares = 0;
+        let treatmentSums = [];
+
+        for (let i = 1; i <= treatments; i++) {
+          let rowTotal = 0;
+          for (let j = 1; j <= 3; j++) {
+            let val = parseFloat(document.getElementById(`V${i}R${j}`).value) || 0;
+            rowTotal += val;
+            colTotals[j - 1] += val;
+            sumOfSquares += val * val;
+          }
+          treatmentSums.push(rowTotal);
+          document.getElementById(`V${i}Total`).innerText = rowTotal;
+          grandTotal += rowTotal;
+        }
+
+        document.getElementById("R1Total").innerText = colTotals[0];
+        document.getElementById("R2Total").innerText = colTotals[1];
+        document.getElementById("R3Total").innerText = colTotals[2];
+        document.getElementById("grandTotal").innerText = grandTotal;
+        document.getElementById("finalGrandTotal").innerText = grandTotal;
+
+        let N = treatments * replications;
+        let correctionFactor = grandTotal ** 2 / N;
+        let totalSumOfSquares = sumOfSquares - correctionFactor;
+
+        let treatmentSumOfSquares = treatmentSums.reduce((sum, value) => sum + value ** 2, 0);
+        let finalTreatmentSum = treatmentSumOfSquares / replications - correctionFactor;
+
+        let replicationSumOfSquares = colTotals.reduce((sum, value) => sum + value ** 2, 0);
+        let finalReplicationSum = replicationSumOfSquares / treatments - correctionFactor;
+
+        let errorSumOfSquares = totalSumOfSquares - (finalTreatmentSum + finalReplicationSum);
+
+        let dfTreatment = treatments - 1;
+        let dfReplication = replications - 1;
+        let dfError = dfTreatment * dfReplication;
+
+        let meanTreatmentSS = finalTreatmentSum / dfTreatment;
+        let meanReplicationSS = finalReplicationSum / dfReplication;
+        let meanErrorSS = errorSumOfSquares / dfError;
+
+        let fcalTreatment = meanTreatmentSS / meanErrorSS;
+        let fcalReplication = meanReplicationSS / meanErrorSS;
+
+        let anovaTableHTML = `
+          <table>
+            <tr>
+              <th>Source of Variation</th>
+              <th>Degree of Freedom (d.f)</th>
+              <th>Sum of Square (SS)</th>
+              <th>Mean Sum of Square (MSS)</th>
+              <th>Fcal</th>
+            </tr>
+            <tr>
+              <td>Treatment (T)</td>
+              <td>${dfTreatment}</td>
+              <td>${finalTreatmentSum.toFixed(2)}</td>
+              <td>${meanTreatmentSS.toFixed(2)}</td>
+              <td>${fcalTreatment.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>Replication (R)</td>
+              <td>${dfReplication}</td>
+              <td>${finalReplicationSum.toFixed(2)}</td>
+              <td>${meanReplicationSS.toFixed(2)}</td>
+              <td>${fcalReplication.toFixed(2)}</td>
+            </tr>
+            <tr>
+              <td>Error (E)</td>
+              <td>${dfError}</td>
+              <td>${errorSumOfSquares.toFixed(2)}</td>
+              <td>${meanErrorSS.toFixed(2)}</td>
+              <td>-</td>
+            </tr>
+          </table>
+        `;
+
+        document.getElementById("anovaResults").innerHTML = anovaTableHTML;
+      }
+    </script>
+  </body>
+</html>

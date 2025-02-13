@@ -172,7 +172,10 @@
         document.getElementById("grandTotal").innerText = grandTotal;
         document.getElementById("finalGrandTotal").innerText = grandTotal;
 
+        //N
         let N = treatments * replications;
+
+        //CORRECTION FACTOR
         let correctionFactor = grandTotal ** 2 / N;
         document.getElementById("correctionFactor").innerText =
           correctionFactor.toFixed(2);
@@ -182,12 +185,14 @@
         document.getElementById("correctionFactorValue").innerText =
           correctionFactor.toFixed(2);
 
+          //TOTAL SUM OF SQUARE
         let totalSumOfSquares = sumOfSquares - correctionFactor;
         document.getElementById("sumOfSquaresFormula").innerText =
           sumOfSquaresFormula;
         document.getElementById("totalSumOfSquares").innerText =
           totalSumOfSquares.toFixed(2);
 
+          //TREATMENT SUM OF SQUARE
         let treatmentSumOfSquares = treatmentSums.reduce(
           (sum, value) => sum + value ** 2,
           0
@@ -202,6 +207,8 @@
           2
         )}`;
 
+
+          //REPLICATION SUM OF SQUARE
         let replicationSumOfSquares = colTotals.reduce(
           (sum, value) => sum + value ** 2,
           0
@@ -216,6 +223,8 @@
           colTotals[2]
         }²) / ${treatments} - ${correctionFactor.toFixed(2)}`;
 
+
+          //ERROR SUM OF SQUARE
         let errorSumOfSquares =
           totalSumOfSquares - (finalTreatmentSum + finalReplicationSum);
         document.getElementById("errorSumOfSquares").innerText =
