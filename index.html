@@ -111,10 +111,12 @@
       <p>
         <strong>Calculation:</strong>
         <span id="errorSumCalculation">
-          (<span id="totalSumOfSquares">0</span>) -
-        (<span id="treatmentSumOfSquares">0</span> +
-        <span id="replicationSumOfSquares">0</span>) =
-        <span id="errorSumOfSquares">0</span>
+          (<span id="totalSumOfSquares">0</span>) - (<span
+            id="treatmentSumOfSquares"
+            >0</span
+          >
+          + <span id="replicationSumOfSquares">0</span>) =
+          <span id="errorSumOfSquares">0</span>
         </span>
       </p>
     </div>
@@ -159,7 +161,8 @@
             rowTotal += val;
             colTotals[j - 1] += val;
             sumOfSquares += val * val;
-            sumOfSquaresFormula += (sumOfSquaresFormula ? " + " : "") + `${val}²`;
+            sumOfSquaresFormula +=
+              (sumOfSquaresFormula ? " + " : "") + `${val}²`;
           }
           treatmentSums.push(rowTotal);
           treatmentSquaresFormula +=
@@ -209,7 +212,7 @@
           treatmentSumOfSquares / replications - correctionFactor;
         document.getElementById("treatmentSumOfSquares").innerText =
           finalTreatmentSum.toFixed(2);
-          document.getElementById(
+        document.getElementById(
           "treatmentSquaresFormula"
         ).innerText = `(${treatmentSquaresFormula}) / ${replications} - ${correctionFactor.toFixed(
           2
@@ -224,7 +227,7 @@
           replicationSumOfSquares / treatments - correctionFactor;
         document.getElementById("replicationSumOfSquares").innerText =
           finalReplicationSum.toFixed(2);
-          document.getElementById("replicationSquaresFormula").innerText = `(${
+        document.getElementById("replicationSquaresFormula").innerText = `(${
           colTotals[0]
         }² + ${colTotals[1]}² + ${
           colTotals[2]
@@ -236,7 +239,7 @@
         document.getElementById("errorSumOfSquares").innerText =
           errorSumOfSquares.toFixed(2);
 
-          document.getElementById(
+        document.getElementById(
           "errorSumCalculation"
         ).innerHTML = `(${totalSumOfSquares.toFixed(
           2
