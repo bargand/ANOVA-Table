@@ -19,6 +19,7 @@ input {
 button {
   margin: 10px;
   padding: 10px;
+  font-size: 16px;
 }
 .summary {
   margin-top: 20px;
