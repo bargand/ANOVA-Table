@@ -109,10 +109,13 @@
       <h3>Error Sum of Squares (ESS) Formula</h3>
       <p><strong>ESS = TSS - (TrSS + RSS)</strong></p>
       <p>
-        <strong>Calculation:</strong> (<span id="totalSumOfSquares">0</span>) -
+        <strong>Calculation:</strong>
+        <span id="errorSumCalculation">
+          (<span id="totalSumOfSquares">0</span>) -
         (<span id="treatmentSumOfSquares">0</span> +
         <span id="replicationSumOfSquares">0</span>) =
         <span id="errorSumOfSquares">0</span>
+        </span>
       </p>
     </div>
 
@@ -143,7 +146,10 @@
         let grandTotal = 0;
         let colTotals = [0, 0, 0];
         let sumOfSquares = 0;
+        let sumOfSquaresFormula = "";
         let treatmentSums = [];
+        let treatmentSquaresFormula = "";
+        let replicationSquaresFormula = "";
 
         for (let i = 1; i <= treatments; i++) {
           let rowTotal = 0;
@@ -153,8 +159,11 @@
             rowTotal += val;
             colTotals[j - 1] += val;
             sumOfSquares += val * val;
+            sumOfSquaresFormula += (sumOfSquaresFormula ? " + " : "") + `${val}²`;
           }
           treatmentSums.push(rowTotal);
+          treatmentSquaresFormula +=
+            (treatmentSquaresFormula ? " + " : "") + `${rowTotal}²`;
           document.getElementById(`V${i}Total`).innerText = rowTotal;
           grandTotal += rowTotal;
         }
@@ -183,9 +192,13 @@
 
         //TOTAL SUM OF SQUARE
         let totalSumOfSquares = sumOfSquares - correctionFactor;
+        document.getElementById("sumOfSquaresFormula").innerText =
+          sumOfSquaresFormula;
 
         document.getElementById("totalSumOfSquares").innerText =
           totalSumOfSquares.toFixed(2);
+
+        // document.getElementById("sumOfSquaresFormula").innerText = sumOfSquares.toFixed(2)
 
         //TREATMENT SUM OF SQUARE
         let treatmentSumOfSquares = treatmentSums.reduce(
@@ -196,6 +209,11 @@
           treatmentSumOfSquares / replications - correctionFactor;
         document.getElementById("treatmentSumOfSquares").innerText =
           finalTreatmentSum.toFixed(2);
+          document.getElementById(
+          "treatmentSquaresFormula"
+        ).innerText = `(${treatmentSquaresFormula}) / ${replications} - ${correctionFactor.toFixed(
+          2
+        )}`;
 
         //REPLICATION SUM OF SQUARE
         let replicationSumOfSquares = colTotals.reduce(
@@ -206,12 +224,25 @@
           replicationSumOfSquares / treatments - correctionFactor;
         document.getElementById("replicationSumOfSquares").innerText =
           finalReplicationSum.toFixed(2);
+          document.getElementById("replicationSquaresFormula").innerText = `(${
+          colTotals[0]
+        }² + ${colTotals[1]}² + ${
+          colTotals[2]
+        }²) / ${treatments} - ${correctionFactor.toFixed(2)}`;
 
         //ERROR SUM OF SQUARE
         let errorSumOfSquares =
           totalSumOfSquares - (finalTreatmentSum + finalReplicationSum);
         document.getElementById("errorSumOfSquares").innerText =
           errorSumOfSquares.toFixed(2);
+
+          document.getElementById(
+          "errorSumCalculation"
+        ).innerHTML = `(${totalSumOfSquares.toFixed(
+          2
+        )}) - (${finalTreatmentSum.toFixed(2)} + ${finalReplicationSum.toFixed(
+          2
+        )}) = ${errorSumOfSquares.toFixed(2)}`;
       }
     </script>
   </body>
