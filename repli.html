@@ -1,35 +1,47 @@
-<label for="replicationCount">Enter Number of Replications:</label>
-<input type="number" id="replicationCount" min="2" max="10" value="3" />
-<button onclick="generateTable()">Generate Table</button>
-
 <script>
-  function generateTable() {
-    let treatments = document.getElementById("treatmentCount").value;
-    let replications = document.getElementById("replicationCount").value;
-    document.getElementById("treatmentNumber").innerText = treatments;
-    document.getElementById("replicationCount").innerText = replications;
-
-    let tableHTML = `<table><tr><th></th>`;
-
+    function calculateTotals() {
+  let treatments = parseInt(document.getElementById("treatmentCount").value);
+  let replications = parseInt(document.getElementById("replicationCount").value);
+  let grandTotal = 0;
+  let colTotals = new Array(replications).fill(0);
+  let sumOfSquares = 0;
+  let sumOfSquaresFormula = "";
+  let treatmentSums = [];
+  let treatmentSquaresFormula = "";
+  
+  for (let i = 1; i <= treatments; i++) {
+    let rowTotal = 0;
     for (let j = 1; j <= replications; j++) {
-      tableHTML += `<th>R<sub>${j}</sub></th>`;
+      let val = parseFloat(document.getElementById(`V${i}R${j}`).value) || 0;
+      rowTotal += val;
+      colTotals[j - 1] += val;
+      sumOfSquares += val * val;
+      sumOfSquaresFormula += (sumOfSquaresFormula ? " + " : "") + `${val}²`;
     }
-    tableHTML += `<th>Total</th></tr>`;
-
-    for (let i = 1; i <= treatments; i++) {
-      tableHTML += `<tr><td>V<sub>${i}</sub></td>`;
-      for (let j = 1; j <= replications; j++) {
-        tableHTML += `<td><input type='number' id='V${i}R${j}'></td>`;
-      }
-      tableHTML += `<td id='V${i}Total'>0</td></tr>`;
-    }
-
-    tableHTML += `<tr><td>Total</td>`;
-    for (let j = 1; j <= replications; j++) {
-      tableHTML += `<td id='R${j}Total'>0</td>`;
-    }
-    tableHTML += `<td id='grandTotal'>0</td></tr></table>`;
-
-    document.getElementById("tableContainer").innerHTML = tableHTML;
+    treatmentSums.push(rowTotal);
+    treatmentSquaresFormula += (treatmentSquaresFormula ? " + " : "") + `${rowTotal}²`;
+    document.getElementById(`V${i}Total`).innerText = rowTotal;
+    grandTotal += rowTotal;
   }
+
+  document.getElementById("grandTotal").innerText = grandTotal;
+  let N = treatments * replications;
+  let correctionFactor = grandTotal ** 2 / N;
+  document.getElementById("correctionFactor").innerText = correctionFactor.toFixed(2);
+
+  let totalSumOfSquares = sumOfSquares - correctionFactor;
+  document.getElementById("totalSumOfSquares").innerText = totalSumOfSquares.toFixed(2);
+
+  let treatmentSumOfSquares = treatmentSums.reduce((sum, value) => sum + value ** 2, 0);
+  let finalTreatmentSum = treatmentSumOfSquares / replications - correctionFactor;
+  document.getElementById("treatmentSumOfSquares").innerText = finalTreatmentSum.toFixed(2);
+
+  let replicationSumOfSquares = colTotals.reduce((sum, value) => sum + value ** 2, 0);
+  let finalReplicationSum = replicationSumOfSquares / treatments - correctionFactor;
+  document.getElementById("replicationSumOfSquares").innerText = finalReplicationSum.toFixed(2);
+
+  let errorSumOfSquares = totalSumOfSquares - (finalTreatmentSum + finalReplicationSum);
+  document.getElementById("errorSumOfSquares").innerText = errorSumOfSquares.toFixed(2);
+}
+
 </script>
