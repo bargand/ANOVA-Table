@@ -1,0 +1,35 @@
+<label for="replicationCount">Enter Number of Replications:</label>
+<input type="number" id="replicationCount" min="2" max="10" value="3" />
+<button onclick="generateTable()">Generate Table</button>
+
+<script>
+  function generateTable() {
+    let treatments = document.getElementById("treatmentCount").value;
+    let replications = document.getElementById("replicationCount").value;
+    document.getElementById("treatmentNumber").innerText = treatments;
+    document.getElementById("replicationCount").innerText = replications;
+
+    let tableHTML = `<table><tr><th></th>`;
+
+    for (let j = 1; j <= replications; j++) {
+      tableHTML += `<th>R<sub>${j}</sub></th>`;
+    }
+    tableHTML += `<th>Total</th></tr>`;
+
+    for (let i = 1; i <= treatments; i++) {
+      tableHTML += `<tr><td>V<sub>${i}</sub></td>`;
+      for (let j = 1; j <= replications; j++) {
+        tableHTML += `<td><input type='number' id='V${i}R${j}'></td>`;
+      }
+      tableHTML += `<td id='V${i}Total'>0</td></tr>`;
+    }
+
+    tableHTML += `<tr><td>Total</td>`;
+    for (let j = 1; j <= replications; j++) {
+      tableHTML += `<td id='R${j}Total'>0</td>`;
+    }
+    tableHTML += `<td id='grandTotal'>0</td></tr></table>`;
+
+    document.getElementById("tableContainer").innerHTML = tableHTML;
+  }
+</script>
