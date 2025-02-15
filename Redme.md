@@ -1,1 +1,1 @@
-index.html is the main file but the changes will do into the ANOVA.html file, i have to recheck the whole calculation then submit or place into the index.html
+index.html is the main file
