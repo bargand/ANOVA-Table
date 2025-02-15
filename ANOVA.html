@@ -292,32 +292,32 @@
               <th>F<sub>MSS</sub></th>
             </tr>
             <tr>
-              <td>Treatment (T)</td>
-              <td>(Total number of treatments - 1)=<br><br>${dfTreatment}</td>
-              <td>TrSS=<br><br>${finalTreatmentSum.toFixed(2)}</td>
-              <td><b>A=</b> TrSS<br> / (Total number of treatments - 1))<br><br>${meanTreatmentSS.toFixed(
+              <td><b>Treatment (T)</b></td>
+              <td>(Total number of treatments - 1)<br><br><b>${dfTreatment}</b></td>
+              <td>TrSS=<br><br><b>${finalTreatmentSum.toFixed(2)}</b></td>
+              <td><b>(A)→</b>TrSS<hr class="Display_Divided">(Total number of treatments - 1)<br><br><b>${meanTreatmentSS.toFixed(
                 2
-              )}</td>
-              <td>(A / C)=<br><br>${fcalTreatment.toFixed(2)}</td>
-              <td>(σe + Rσ²g)=<br><br>${meanTreatmentSS.toFixed(2)}</td>
+              )}</b></td>
+              <td>A<hr class="Display_Divided">C<br><br><b>${fcalTreatment.toFixed(2)}</b></td>
+              <td>(σe + Rσ²g)<br><br><b>${meanTreatmentSS.toFixed(2)}</b></td>
             </tr>
             <tr>
-              <td>Replication (R)</td>
-              <td>(Total number of replication - 1)<br>${dfReplication}</td>
-              <td>RSS=<br><br>${finalReplicationSum.toFixed(2)}</td>
-              <td><span><b>B=</b></span> RSS<hr class="Display_Divided"> / (Total number of replication - 1))<br><br>${meanReplicationSS.toFixed(
+              <td><b>Replication (R)</b></td>
+              <td>(Total number of replication - 1)<br><br><b>${dfReplication}</b></td>
+              <td>RSS=<br><br><b>${finalReplicationSum.toFixed(2)}</b></td>
+              <td><RSS><b>(B)→</b>RSS<hr class="Display_Divided">(Total number of replication - 1)<br><br><b>${meanReplicationSS.toFixed(
                 2
-              )}</td>
-              <td>(B / C)=<br><br>${fcalReplication.toFixed(2)}</td>
+              )}</b></td>
+              <td>B<hr class="Display_Divided">C<br><br><b>${fcalReplication.toFixed(2)}</b></td>
               <td>-</td>
             </tr>
             <tr>
-              <td>Error (E)</td>
-              <td><b>Z=</b> (Total number of treatments - 1) ×<br> (Total number of replication - 1)<br><br>${dfError}</td>
-              <td>ESS=<br><br>${errorSumOfSquares.toFixed(2)}</td>
-              <td><b>C=</b> RSS<br> / Z<br><br>${meanErrorSS.toFixed(2)}</td>
+              <td><b>Error (E)</b></td>
+              <td><b>(Z)→</b> (Total number of treatments - 1) ×<br> (Total number of replication - 1)<br><br>${dfError}</td>
+              <td>ESS=<br><br><b>${errorSumOfSquares.toFixed(2)}</b></td>
+              <td><b>(C)→</b> RSS<hr class="Display_Divided">Z<br><br><b>${meanErrorSS.toFixed(2)}</b></td>
               <td>-</td>
-              <td>σ2e=<br><br>${meanErrorSS.toFixed(2)}</td>
+              <td>σ2e=<br><br><b>${meanErrorSS.toFixed(2)}</b></td>
             </tr>
           </table>
         `;
