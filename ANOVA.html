@@ -46,10 +46,26 @@
   </head>
   <body>
     <h2>ANOVA Table Generator</h2>
+
     <label for="treatmentCount">Enter Number of Treatments:</label>
-    <input type="number" id="treatmentCount" min="2" max="10" value="4" />
+    <input
+      type="number"
+      id="treatmentCount"
+      min="2"
+      max="10"
+      value="4"
+      oninput="validateCount(this)"
+    />
+
     <label for="replicationCount">Enter Number of Replications:</label>
-    <input type="number" id="replicationCount" min="2" max="10" value="3" />
+    <input
+      type="number"
+      id="replicationCount"
+      min="2"
+      max="10"
+      value="3"
+      oninput="validateCount(this)"
+    />
 
     <button onclick="generateTable()">Generate Table</button>
 
@@ -133,6 +149,33 @@
 
     <div id="anovaResults"></div>
 
+    <div class="formula-box">
+      <p>
+        <strong
+          >F<sub>MSS</sub> for Treatment: σ²e + Rσ²g =
+          <span id="FmssTreatment">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >F<sub>MSS</sub> for Error: σ²e =
+          <span id="FmssError">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >F<sub>MSS</sub> for Genotype: σ²g = [{(σ²e + Rσ²g) - σ²e}/r] =
+          <span id="FmssGenotype">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >F<sub>MSS</sub> for Genotype: σ²p = (σ²g + σ²e) =
+          <span id="FmssPhenotype">0</span></strong
+        >
+      </p>
+    </div>
+
     <script>
       function generateTable() {
         let treatments = document.getElementById("treatmentCount").value;
@@ -165,6 +208,13 @@
         document.getElementById("tableContainer").innerHTML = tableHTML;
       }
 
+      function validateCount(input) {
+        if (input.value < 2 || isNaN(input.value)) {
+          alert("Please enter a valid number (minimum 2).");
+          input.value = 2; // Reset to minimum valid value
+        }
+      }
+
       function calculateTotals() {
         let treatments = parseInt(
           document.getElementById("treatmentCount").value
@@ -172,6 +222,19 @@
         let replications = parseInt(
           document.getElementById("replicationCount").value
         );
+
+        if (
+          isNaN(treatments) ||
+          treatments < 2 ||
+          isNaN(replications) ||
+          replications < 2
+        ) {
+          alert(
+            "Invalid treatment or replication count. Please enter valid numbers."
+          );
+          return;
+        }
+
         let grandTotal = 0;
         let colTotals = new Array(replications).fill(0);
         let sumOfSquares = 0;
@@ -182,8 +245,19 @@
         for (let i = 1; i <= treatments; i++) {
           let rowTotal = 0;
           for (let j = 1; j <= replications; j++) {
-            let val =
-              parseFloat(document.getElementById(`V${i}R${j}`).value) || 0;
+            // let val =
+            //   parseFloat(document.getElementById(`V${i}R${j}`).value) || 0;
+            let cell = document.getElementById(`V${i}R${j}`);
+            let val = parseFloat(cell.value);
+
+            if (isNaN(val) || val < 0) {
+              alert(
+                `Invalid value in V${i}R${j}. Please enter a non-negative number.`
+              );
+              cell.value = "";
+              return;
+            }
+
             rowTotal += val;
             colTotals[j - 1] += val;
             sumOfSquares += val * val;
@@ -298,8 +372,10 @@
               <td><b>(A)→</b>TrSS<hr class="Display_Divided">(Total number of treatments - 1)<br><br><b>${meanTreatmentSS.toFixed(
                 2
               )}</b></td>
-              <td>A<hr class="Display_Divided">C<br><br><b>${fcalTreatment.toFixed(2)}</b></td>
-              <td>(σe + Rσ²g)<br><br><b>${meanTreatmentSS.toFixed(2)}</b></td>
+              <td>A<hr class="Display_Divided">C<br><br><b>${fcalTreatment.toFixed(
+                2
+              )}</b></td>
+              <td>(σ²e + Rσ²g)<br><br><b>${meanTreatmentSS.toFixed(2)}</b></td>
             </tr>
             <tr>
               <td><b>Replication (R)</b></td>
@@ -308,21 +384,35 @@
               <td><RSS><b>(B)→</b>RSS<hr class="Display_Divided">(Total number of replication - 1)<br><br><b>${meanReplicationSS.toFixed(
                 2
               )}</b></td>
-              <td>B<hr class="Display_Divided">C<br><br><b>${fcalReplication.toFixed(2)}</b></td>
+              <td>B<hr class="Display_Divided">C<br><br><b>${fcalReplication.toFixed(
+                2
+              )}</b></td>
               <td>-</td>
             </tr>
             <tr>
               <td><b>Error (E)</b></td>
               <td><b>(Z)→</b> (Total number of treatments - 1) ×<br> (Total number of replication - 1)<br><br>${dfError}</td>
               <td>ESS=<br><br><b>${errorSumOfSquares.toFixed(2)}</b></td>
-              <td><b>(C)→</b> RSS<hr class="Display_Divided">Z<br><br><b>${meanErrorSS.toFixed(2)}</b></td>
+              <td><b>(C)→</b> RSS<hr class="Display_Divided">Z<br><br><b>${meanErrorSS.toFixed(
+                2
+              )}</b></td>
               <td>-</td>
-              <td>σ2e=<br><br><b>${meanErrorSS.toFixed(2)}</b></td>
+              <td>σ²e=<br><br><b>${meanErrorSS.toFixed(2)}</b></td>
             </tr>
           </table>
         `;
 
         document.getElementById("anovaResults").innerHTML = anovaTableHTML;
+        document.getElementById("FmssTreatment").innerHTML = meanTreatmentSS;
+        document.getElementById("FmssError").innerHTML = meanErrorSS;
+        let genotype = (meanTreatmentSS - meanErrorSS) / replications;
+        document.getElementById(
+          "FmssGenotype"
+        ).innerHTML = `(${meanTreatmentSS}-${meanErrorSS})/${replications} = ${genotype}`;
+        let phenotype = genotype + meanErrorSS;
+        document.getElementById(
+          "FmssPhenotype"
+        ).innerHTML = `${genotype} + ${meanErrorSS} = ${phenotype}`;
       }
     </script>
   </body>
