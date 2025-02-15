@@ -31,3 +31,7 @@ button {
   margin: 20px auto;
   background-color: #f9f9f9;
 }
+.Display_Divided {
+  border-top: 1px solid #000;
+  margin: 2px 0;
+}
