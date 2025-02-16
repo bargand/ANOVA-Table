@@ -403,16 +403,21 @@
         `;
 
         document.getElementById("anovaResults").innerHTML = anovaTableHTML;
-        document.getElementById("FmssTreatment").innerHTML = meanTreatmentSS;
-        document.getElementById("FmssError").innerHTML = meanErrorSS;
-        let genotype = (meanTreatmentSS - meanErrorSS) / replications;
+        document.getElementById("FmssTreatment").innerHTML =
+          meanTreatmentSS.toFixed(2);
+        document.getElementById("FmssError").innerHTML = meanErrorSS.toFixed(2);
+        let genotype = ((meanTreatmentSS - meanErrorSS) / replications).toFixed(
+          2
+        );
         document.getElementById(
           "FmssGenotype"
-        ).innerHTML = `(${meanTreatmentSS}-${meanErrorSS})/${replications} = ${genotype}`;
-        let phenotype = genotype + meanErrorSS;
+        ).innerHTML = `(${meanTreatmentSS.toFixed(2)}-${meanErrorSS.toFixed(
+          2
+        )})/${replications.toFixed(2)} = ${genotype}`;
+        let phenotype = (parseFloat(genotype) + meanErrorSS).toFixed(2);
         document.getElementById(
           "FmssPhenotype"
-        ).innerHTML = `${genotype} + ${meanErrorSS} = ${phenotype}`;
+        ).innerHTML = `${genotype} + ${meanErrorSS.toFixed(2)} = ${phenotype}`;
       }
     </script>
   </body>
