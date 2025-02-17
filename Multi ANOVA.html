@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Location ANOVA</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            text-align: center;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <h2>Multiple Location ANOVA</h2>
+    <label for="locationCount">Enter number of locations:</label>
+    <input type="number" id="locationCount" min="1">
+    <button onclick="generateInputFields()">Next</button>
+    
+    <div id="locationInputs"></div>
+    <button id="generateTablesBtn" class="hidden" onclick="generateTables()">Generate Tables</button>
+    <div id="tablesContainer"></div>
+    <button id="calculateBtn" class="hidden" onclick="calculateValues()">Calculate</button>
+    
+    <script>
+        function generateInputFields() {
+            let count = document.getElementById("locationCount").value;
+            let container = document.getElementById("locationInputs");
+            container.innerHTML = "";
+            
+            for (let i = 1; i <= count; i++) {
+                container.innerHTML += `<h3>Location ${i}</h3>
+                    <label>Replication Count: <input type="number" id="replication${i}" min="1"></label>
+                    <label>Treatment Count: <input type="number" id="treatment${i}" min="1"></label><br><br>`;
+            }
+            document.getElementById("generateTablesBtn").classList.remove("hidden");
+        }
+        
+        function generateTables() {
+            let count = document.getElementById("locationCount").value;
+            let container = document.getElementById("tablesContainer");
+            container.innerHTML = "";
+            
+            for (let i = 1; i <= count; i++) {
+                let replication = document.getElementById(`replication${i}`).value;
+                let treatment = document.getElementById(`treatment${i}`).value;
+                
+                let tableHTML = `<h3>Location ${i}</h3><table><tr>`;
+                for (let j = 1; j <= replication; j++) {
+                    tableHTML += `<th>R${j}</th>`;
+                }
+                tableHTML += `<th>Total</th><th>Mean</th></tr>`;
+                
+                for (let t = 1; t <= treatment; t++) {
+                    tableHTML += `<tr><td contenteditable="true" class="data" data-location="${i}" data-treatment="${t}"></td>`;
+                    for (let r = 2; r <= replication; r++) {
+                        tableHTML += `<td contenteditable="true" class="data" data-location="${i}" data-treatment="${t}"></td>`;
+                    }
+                    tableHTML += `<td class="total"></td><td class="mean"></td></tr>`;
+                }
+                
+                tableHTML += `<tr><td colspan="${replication}">Total</td><td class="grandTotal"></td></tr>`;
+                tableHTML += `</table>`;
+                container.innerHTML += tableHTML;
+            }
+            document.getElementById("calculateBtn").classList.remove("hidden");
+        }
+        
+        function calculateValues() {
+            let tables = document.querySelectorAll("table");
+            
+            tables.forEach(table => {
+                let rows = table.querySelectorAll("tr");
+                let grandTotal = 0;
+                
+                for (let i = 1; i < rows.length - 1; i++) {
+                    let cells = rows[i].querySelectorAll("td");
+                    let sum = 0;
+                    let count = cells.length - 2;
+                    
+                    for (let j = 0; j < count; j++) {
+                        let value = parseFloat(cells[j].innerText) || 0;
+                        sum += value;
+                    }
+                    
+                    cells[count].innerText = sum;
+                    cells[count + 1].innerText = (sum / count).toFixed(2);
+                    grandTotal += sum;
+                }
+                rows[rows.length - 1].querySelector(".grandTotal").innerText = grandTotal;
+            });
+        }
+    </script>
+</body>
+</html>
