@@ -176,6 +176,33 @@
       </p>
     </div>
 
+    <div class="formula-box">
+      <p>
+        <strong
+          >Mean Deviation Of Grand Total (GM): (GT / N) =
+          <span id="MeanOfGrandMean">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >Error Co-efficient of variance: (√σe) / GM =
+          <span id="EnvironCoffVariance">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >Genotypic Co-efficient of variance: (√σg) / GM =
+          <span id="GeanCoffVariance">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >Phenotypic Co-efficient of variance: (√σp) / GM =
+          <span id="PhenoCoffVariance">0</span></strong
+        >
+      </p>
+    </div>
+
     <script>
       function generateTable() {
         let treatments = document.getElementById("treatmentCount").value;
@@ -418,6 +445,33 @@
         document.getElementById(
           "FmssPhenotype"
         ).innerHTML = `${genotype} + ${meanErrorSS.toFixed(2)} = ${phenotype}`;
+
+        let MeanOfGrandMean = (grandTotal / N).toFixed(2);
+
+        document.getElementById(
+          "MeanOfGrandMean"
+        ).innerHTML = `${grandTotal} / ${N} = ${MeanOfGrandMean}`;
+
+        //Error co-efficient of variance
+        let EnvRut = Math.sqrt(meanErrorSS);
+        let EnvironCoffVariance = (EnvRut / MeanOfGrandMean).toFixed(2);
+        document.getElementById(
+          "EnvironCoffVariance"
+        ).innerHTML = `√${meanErrorSS} / ${MeanOfGrandMean} = ${EnvironCoffVariance}`;
+
+        //Genotypic co-efficient of varience
+        let GeanRut = Math.sqrt(genotype);
+        let GeanCoffVariance = (GeanRut / MeanOfGrandMean).toFixed(2);
+        document.getElementById(
+          "GeanCoffVariance"
+        ).innerHTML = `√${genotype} / ${MeanOfGrandMean} = ${GeanCoffVariance}`;
+
+        //Phenotypic Co-efficient of Variance
+        let PhinoRut = Math.sqrt(phenotype);
+        let PhenoCoffVariance = (PhinoRut / MeanOfGrandMean).toFixed(2);
+        document.getElementById(
+          "PhenoCoffVariance"
+        ).innerHTML = `√${phenotype} / ${MeanOfGrandMean} = ${PhenoCoffVariance}`;
       }
     </script>
   </body>
