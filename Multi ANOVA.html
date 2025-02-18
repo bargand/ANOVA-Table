@@ -1,118 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ANOVA Table Generator</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiple Location ANOVA</title>
     <style>
-      table,
-      th,
-      td {
-        border: 1px solid black;
-        border-collapse: collapse;
-        padding: 8px;
-        text-align: center;
-      }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 8px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .table-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 20px;
+        }
+        .summary-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
     </style>
-  </head>
-  <body>
-    <label>Number of Locations:</label>
-    <input type="number" id="locationCount" min="1" />
+</head>
+<body>
+    <h2>Multiple Location ANOVA</h2>
+    <label for="locationCount">Enter Number of Locations:</label>
+    <input type="number" id="locationCount" min="1">
     <button onclick="generateInputFields()">Generate Tables</button>
-
+    
     <div id="inputFields"></div>
-    <div id="tables"></div>
+    <button onclick="generateTables()">Generate Tables</button>
+    <div class="container">
+        <div id="tablesContainer"></div>
+        <div id="summaryContainer" class="summary-container"></div>
+    </div>
+    
+    <button onclick="calculateTotals()">Calculate</button>
 
     <script>
-      function generateInputFields() {
-        let locationCount = document.getElementById("locationCount").value;
-        let inputFieldsDiv = document.getElementById("inputFields");
-        inputFieldsDiv.innerHTML = "";
-
-        for (let i = 1; i <= locationCount; i++) {
-          inputFieldsDiv.innerHTML += `<br><label>Location ${i} - Treatments:</label>
-                    <input type="number" id="treatment${i}" min="1"> 
-                    <label>Replications:</label>
-                    <input type="number" id="replication${i}" min="1"><br>`;
-        }
-        inputFieldsDiv.innerHTML += `<br><button onclick="generateTables()">Generate Tables</button>`;
-      }
-
-      function generateTables() {
-        let locationCount = document.getElementById("locationCount").value;
-        let tablesDiv = document.getElementById("tables");
-        tablesDiv.innerHTML = "";
-
-        for (let i = 1; i <= locationCount; i++) {
-          let treatmentCount = document.getElementById(`treatment${i}`).value;
-          let replicationCount = document.getElementById(
-            `replication${i}`
-          ).value;
-
-          let tableHTML = `<h3>Location ${i}</h3><table><tr><th></th>`;
-          for (let r = 1; r <= replicationCount; r++) {
-            tableHTML += `<th>R${r}</th>`;
-          }
-          tableHTML += `<th>Total</th><th>Mean</th></tr>`;
-
-          for (let t = 1; t <= treatmentCount; t++) {
-            tableHTML += `<tr><td>V${t}</td>`;
-            for (let r = 1; r <= replicationCount; r++) {
-              tableHTML += `<td><input type='number' id='L${i}T${t}R${r}' placeholder='0'></td>`;
+        function generateInputFields() {
+            let locationCount = document.getElementById('locationCount').value;
+            let inputFields = document.getElementById('inputFields');
+            inputFields.innerHTML = '';
+            
+            for (let i = 1; i <= locationCount; i++) {
+                inputFields.innerHTML += `<br><label>Location ${i} - Replication Count:</label>
+                <input type='number' id='replication${i}' min='1'>
+                <label>Treatment Count:</label>
+                <input type='number' id='treatment${i}' min='1'><br>`;
             }
-            tableHTML += `<td id='L${i}T${t}Total'>0</td><td id='L${i}T${t}Mean'>0</td></tr>`;
-          }
-
-          tableHTML += `<tr><td>Total</td>`;
-          for (let r = 1; r <= replicationCount; r++) {
-            tableHTML += `<td id='L${i}R${r}Total'>0</td>`;
-          }
-          tableHTML += `<td colspan='2' id='L${i}GrandTotal'>Grand Total= 0</td></tr>`;
-
-          tableHTML += `</table>`;
-          tablesDiv.innerHTML += tableHTML;
         }
-        tablesDiv.innerHTML += `<br><button onclick="calculateValues()">Calculate</button>`;
-      }
 
-      function calculateValues() {
-        let locationCount = document.getElementById("locationCount").value;
-
-        for (let i = 1; i <= locationCount; i++) {
-          let treatmentCount = document.getElementById(`treatment${i}`).value;
-          let replicationCount = document.getElementById(
-            `replication${i}`
-          ).value;
-          let grandTotal = 0;
-
-          for (let r = 1; r <= replicationCount; r++) {
-            let colTotal = 0;
-            for (let t = 1; t <= treatmentCount; t++) {
-              let val =
-                Number(document.getElementById(`L${i}T${t}R${r}`).value) || 0;
-              colTotal += val;
+        function generateTables() {
+            let locationCount = document.getElementById('locationCount').value;
+            let tablesContainer = document.getElementById('tablesContainer');
+            let summaryContainer = document.getElementById('summaryContainer');
+            tablesContainer.innerHTML = '';
+            summaryContainer.innerHTML = '';
+            
+            for (let i = 1; i <= locationCount; i++) {
+                let replicationCount = document.getElementById(`replication${i}`).value;
+                let treatmentCount = document.getElementById(`treatment${i}`).value;
+                
+                let tableHTML = `<div class='table-container'><h3>Location ${i}</h3>
+                                <table id='table${i}'><tr><th></th>`;
+                
+                for (let r = 1; r <= replicationCount; r++) {
+                    tableHTML += `<th>R${r}</th>`;
+                }
+                
+                tableHTML += `<th>Total</th><th>Mean</th></tr>`;
+                
+                for (let t = 1; t <= treatmentCount; t++) {
+                    tableHTML += `<tr><td>V${t}</td>`;
+                    
+                    for (let r = 1; r <= replicationCount; r++) {
+                        tableHTML += `<td><input type='number' placeholder='0' id='loc${i}treat${t}rep${r}'></td>`;
+                    }
+                    
+                    tableHTML += `<td id='total_loc${i}_treat${t}'>0</td><td id='mean_loc${i}_treat${t}'>0</td></tr>`;
+                }
+                
+                tableHTML += `<tr><td>Total</td>`;
+                for (let r = 1; r <= replicationCount; r++) {
+                    tableHTML += `<td id='colTotal_loc${i}_rep${r}'>0</td>`;
+                }
+                tableHTML += `<td id='grandTotal_loc${i}'>0</td><td></td></tr></table></div>`;
+                
+                tablesContainer.innerHTML += tableHTML;
+                
+                let summaryHTML = `<div><strong>Summary for Location ${i}:</strong><br>
+                                  Replication Count: ${replicationCount}<br>
+                                  Treatment Count: ${treatmentCount}<br>
+                                  Grand Total: <span id='grandTotalSummary_loc${i}'>0</span></div>`;
+                summaryContainer.innerHTML += summaryHTML;
             }
-            document.getElementById(`L${i}R${r}Total`).innerText = colTotal;
-            grandTotal += colTotal;
-          }
-
-          for (let t = 1; t <= treatmentCount; t++) {
-            let rowTotal = 0;
-            for (let r = 1; r <= replicationCount; r++) {
-              rowTotal +=
-                Number(document.getElementById(`L${i}T${t}R${r}`).value) || 0;
-            }
-            let meanValue = (rowTotal / replicationCount).toFixed(2);
-            document.getElementById(`L${i}T${t}Total`).innerText = rowTotal;
-            document.getElementById(
-              `L${i}T${t}Mean`
-            ).innerText = `${rowTotal}/${replicationCount} = ${meanValue}`;
-          }
-          document.getElementById(
-            `L${i}GrandTotal`
-          ).innerText = `Grand Total= ${grandTotal}`;
         }
-      }
+        
+        function calculateTotals() {
+            let locationCount = document.getElementById('locationCount').value;
+            
+            for (let i = 1; i <= locationCount; i++) {
+                let replicationCount = document.getElementById(`replication${i}`).value;
+                let treatmentCount = document.getElementById(`treatment${i}`).value;
+                let grandTotal = 0;
+                
+                for (let t = 1; t <= treatmentCount; t++) {
+                    let rowTotal = 0;
+                    for (let r = 1; r <= replicationCount; r++) {
+                        let value = parseFloat(document.getElementById(`loc${i}treat${t}rep${r}`).value) || 0;
+                        rowTotal += value;
+                    }
+                    let mean = (rowTotal / replicationCount).toFixed(2);
+                    grandTotal += rowTotal;
+                    document.getElementById(`total_loc${i}_treat${t}`).innerText = rowTotal;
+                    document.getElementById(`mean_loc${i}_treat${t}`).innerText = mean;
+                }
+                
+                for (let r = 1; r <= replicationCount; r++) {
+                    let colTotal = 0;
+                    for (let t = 1; t <= treatmentCount; t++) {
+                        colTotal += parseFloat(document.getElementById(`loc${i}treat${t}rep${r}`).value) || 0;
+                    }
+                    document.getElementById(`colTotal_loc${i}_rep${r}`).innerText = colTotal;
+                }
+                
+                document.getElementById(`grandTotal_loc${i}`).innerText = grandTotal;
+                document.getElementById(`grandTotalSummary_loc${i}`).innerText = grandTotal;
+            }
+        }
     </script>
-  </body>
+</body>
 </html>

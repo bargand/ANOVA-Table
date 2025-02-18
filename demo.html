@@ -1,106 +1,125 @@
-<label for="numTreatments">Number of Treatments:</label>
-<input type="number" id="numTreatments" min="1" value="3" />
-
-<label for="numReplications">Number of Replications:</label>
-<input type="number" id="numReplications" min="1" value="3" />
-
-<label for="locationInput">Enter Locations (comma-separated):</label>
-<input type="text" id="locationInput" placeholder="e.g., Site A, Site B" />
-
-<button onclick="generateTables()">Generate Tables</button>
-
-<div id="tablesContainer"></div>
-
-<button onclick="calculateResults()">Calculate</button>
-
-<div id="resultsContainer"></div>
-
-<script>
-  let locationData = {}; // Stores data for each location separately
-
-  function generateTables() {
-    const numTreatments =
-      parseInt(document.getElementById("numTreatments").value) || 3;
-    const numReplications =
-      parseInt(document.getElementById("numReplications").value) || 3;
-    const locationInput = document.getElementById("locationInput").value.trim();
-
-    if (!locationInput) {
-      alert("Please enter at least one location.");
-      return;
-    }
-
-    const locations = locationInput.split(",").map((loc) => loc.trim()); // Convert input to array
-    locationData = {}; // Reset previous location data
-
-    const container = document.getElementById("tablesContainer");
-    container.innerHTML = ""; // Clear previous tables
-
-    locations.forEach((location) => {
-      locationData[location] = []; // Create an array to store values for this location
-
-      let tableHtml = `
-            <h3>${location}</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Treatment</th>
-                        <th>Replication</th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody-${location}">
-                    ${generateRows(location, numTreatments, numReplications)}
-                </tbody>
-            </table>
-        `;
-      container.innerHTML += tableHtml;
-    });
-  }
-
-  function generateRows(location, numTreatments, numReplications) {
-    let rowsHtml = "";
-
-    for (let t = 1; t <= numTreatments; t++) {
-      for (let r = 1; r <= numReplications; r++) {
-        const rowIndex = (t - 1) * numReplications + (r - 1);
-        if (!locationData[location][rowIndex]) {
-          locationData[location][rowIndex] = {
-            treatment: `T${t}`,
-            replication: r,
-            value: "",
-          };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ANOVA Table Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .table-container {
+            margin: 20px;
+            padding: 10px;
+            border: 1px solid #000;
+        }
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            text-align: center;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h2>ANOVA Table Generator</h2>
+    <label for="locationCount">Enter Number of Locations:</label>
+    <input type="number" id="locationCount" min="1">
+    <button id="generateInputFieldsBtn">Next</button>
 
-        rowsHtml += `
-                <tr>
-                    <td>${locationData[location][rowIndex].treatment}</td>
-                    <td>${locationData[location][rowIndex].replication}</td>
-                    <td>
-                        <input type="number" value="${locationData[location][rowIndex].value}" 
-                            oninput="updateValue('${location}', ${rowIndex}, this.value)">
-                    </td>
-                </tr>
-            `;
-      }
-    }
-    return rowsHtml;
-  }
+    <div id="inputFieldsContainer" class="hidden"></div>
+    <button id="generateTablesBtn" class="hidden">Generate Tables</button>
+    
+    <div class="container" id="tablesContainer"></div>
+    <button id="calculateBtn" class="hidden">Calculate</button>
 
-  function updateValue(location, rowIndex, value) {
-    locationData[location][rowIndex].value = value;
-  }
+    <script>
+        document.getElementById("generateInputFieldsBtn").addEventListener("click", function() {
+            const locationCount = parseInt(document.getElementById("locationCount").value);
+            const inputFieldsContainer = document.getElementById("inputFieldsContainer");
+            inputFieldsContainer.innerHTML = "";
 
-  function calculateResults() {
-    let resultsContainer = document.getElementById("resultsContainer");
-    resultsContainer.innerHTML = "<h3>Results</h3>";
+            if (locationCount > 0) {
+                for (let i = 1; i <= locationCount; i++) {
+                    inputFieldsContainer.innerHTML += `
+                        <div>
+                            <h3>Location ${i}</h3>
+                            <label>Replication Count: </label>
+                            <input type="number" class="replicationCount" data-location="${i}" min="1">
+                            <label>Treatment Count: </label>
+                            <input type="number" class="treatmentCount" data-location="${i}" min="1">
+                        </div>
+                    `;
+                }
+                inputFieldsContainer.classList.remove("hidden");
+                document.getElementById("generateTablesBtn").classList.remove("hidden");
+                document.getElementById("generateInputFieldsBtn").classList.add("hidden");
+            }
+        });
 
-    Object.keys(locationData).forEach((location) => {
-      let sum = locationData[location].reduce(
-        (acc, row) => acc + (parseFloat(row.value) || 0),
-        0
-      );
-      resultsContainer.innerHTML += `<p>${location}: Sum = ${sum}</p>`;
-    });
-  }
-</script>
+        document.getElementById("generateTablesBtn").addEventListener("click", function() {
+            const tablesContainer = document.getElementById("tablesContainer");
+            tablesContainer.innerHTML = "";
+            const locations = document.querySelectorAll(".replicationCount");
+
+            locations.forEach(location => {
+                const locIndex = location.getAttribute("data-location");
+                const repCount = parseInt(location.value);
+                const treatCount = parseInt(document.querySelector(`.treatmentCount[data-location='${locIndex}']`).value);
+                
+                if (repCount > 0 && treatCount > 0) {
+                    let tableHtml = `<div class='table-container'><h3>Location ${locIndex}</h3>`;
+                    tableHtml += `<table><tr>`;
+                    for (let r = 1; r <= repCount; r++) {
+                        tableHtml += `<th>R${r}</th>`;
+                    }
+                    tableHtml += `<th>Total</th><th>Mean</th></tr>`;
+
+                    for (let t = 1; t <= treatCount; t++) {
+                        tableHtml += `<tr><td>V${t}</td>`;
+                        for (let r = 1; r <= repCount; r++) {
+                            tableHtml += `<td><input type='number' class='data-input' data-location='${locIndex}' data-treatment='${t}' data-replication='${r}' placeholder='0'></td>`;
+                        }
+                        tableHtml += `<td class='total' data-location='${locIndex}' data-treatment='${t}'>0</td>`;
+                        tableHtml += `<td class='mean' data-location='${locIndex}' data-treatment='${t}'>0</td>`;
+                        tableHtml += `</tr>`;
+                    }
+                    tableHtml += `</table></div>`;
+                    tablesContainer.innerHTML += tableHtml;
+                }
+            });
+            document.getElementById("generateTablesBtn").classList.add("hidden");
+            document.getElementById("calculateBtn").classList.remove("hidden");
+        });
+
+        document.getElementById("calculateBtn").addEventListener("click", function() {
+            document.querySelectorAll(".table-container").forEach(container => {
+                const locIndex = container.querySelector("h3").textContent.split(" ")[1];
+                const repCount = container.querySelector("th:last-child").previousElementSibling.cellIndex;
+                
+                container.querySelectorAll("tr").forEach((row, rowIndex) => {
+                    if (rowIndex > 0 && rowIndex <= row.parentElement.childElementCount - 1) {
+                        let total = 0;
+                        row.querySelectorAll("td input").forEach(input => {
+                            total += parseFloat(input.value) || 0;
+                        });
+                        row.querySelector(".total").textContent = total;
+                        row.querySelector(".mean").textContent = (total / repCount).toFixed(2);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -457,7 +457,7 @@
         let EnvironCoffVariance = (EnvRut / MeanOfGrandMean).toFixed(2);
         document.getElementById(
           "EnvironCoffVariance"
-        ).innerHTML = `√${meanErrorSS} / ${MeanOfGrandMean} = ${EnvironCoffVariance}`;
+        ).innerHTML = `√${meanErrorSS.toFixed(2)} / ${MeanOfGrandMean} = ${EnvironCoffVariance}`;
 
         //Genotypic co-efficient of varience
         let GeanRut = Math.sqrt(genotype);
