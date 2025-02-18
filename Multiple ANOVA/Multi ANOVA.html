@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multiple Location ANOVA</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+      }
+      .location-section {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        padding: 5px;
+        text-align: center;
+      }
+      .summary {
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Multiple Location ANOVA</h2>
+    <label for="locationCount">Enter Number of Locations:</label>
+    <input type="number" id="locationCount" min="1" />
+    <button onclick="generateInputFields()">Next</button>
+    <div id="inputFields"></div>
+    <button
+      id="generateTablesBtn"
+      style="display: none"
+      onclick="generateTables()"
+    >
+      Generate Tables
+    </button>
+    <div class="container" id="tablesContainer"></div>
+    <button id="calculateBtn" style="display: none" onclick="calculateTotals()">
+      Calculate
+    </button>
+
+    <script>
+      function generateInputFields() {
+        const locationCount = document.getElementById("locationCount").value;
+        const inputFieldsDiv = document.getElementById("inputFields");
+        inputFieldsDiv.innerHTML = "";
+
+        for (let i = 1; i <= locationCount; i++) {
+          inputFieldsDiv.innerHTML += `
+                    <div>
+                        <h4>Location ${i}</h4>
+                        <label>Replication Count:</label>
+                        <input type="number" id="replicationCount${i}" min="1">
+                        <label>Treatment Count:</label>
+                        <input type="number" id="treatmentCount${i}" min="1">
+                    </div>
+                `;
+        }
+        document.getElementById("generateTablesBtn").style.display = "block";
+      }
+
+      function generateTables() {
+        const locationCount = document.getElementById("locationCount").value;
+        const tablesContainer = document.getElementById("tablesContainer");
+        tablesContainer.innerHTML = "";
+
+        for (let i = 1; i <= locationCount; i++) {
+          const repCount = document.getElementById(
+            `replicationCount${i}`
+          ).value;
+          const treatCount = document.getElementById(
+            `treatmentCount${i}`
+          ).value;
+
+          let tableHTML = `<div class="location-section">
+                    <h4>Location ${i}</h4>
+                    <table>
+                        <tr>
+                            <th>Treatment</th>`;
+          for (let j = 1; j <= repCount; j++) {
+            tableHTML += `<th>R${j}</th>`;
+          }
+          tableHTML += `<th>Total</th><th>Mean</th></tr>`;
+
+          for (let k = 1; k <= treatCount; k++) {
+            tableHTML += `<tr>
+                        <td>Treatment ${k}</td>`;
+            for (let j = 1; j <= repCount; j++) {
+              tableHTML += `<td><input type="number" id="loc${i}treat${k}rep${j}" placeholder="0"></td>`;
+            }
+            tableHTML += `<td id="loc${i}treat${k}total">0</td>
+                                  <td id="loc${i}treat${k}mean">0</td>
+                    </tr>`;
+          }
+          tableHTML += `</table>
+                    <div class="summary">
+                        <p><strong>Replication Count:</strong> ${repCount}</p>
+                        <p><strong>Treatment Count:</strong> ${treatCount}</p>
+                        <p><strong>Grand Total:</strong> <span id="grandTotal${i}">0</span></p>
+                    </div>
+                </div>`;
+
+          tablesContainer.innerHTML += tableHTML;
+        }
+        document.getElementById("calculateBtn").style.display = "block";
+      }
+
+      function calculateTotals() {
+        const locationCount = document.getElementById("locationCount").value;
+
+        for (let i = 1; i <= locationCount; i++) {
+          const repCount = parseInt(
+            document.getElementById(`replicationCount${i}`).value
+          );
+          const treatCount = parseInt(
+            document.getElementById(`treatmentCount${i}`).value
+          );
+          let grandTotal = 0;
+
+          // Array to store column totals (for replications R1, R2, R3, ...)
+          let columnTotals = new Array(repCount).fill(0);
+
+          for (let k = 1; k <= treatCount; k++) {
+            let total = 0;
+            for (let j = 1; j <= repCount; j++) {
+              let cellValue =
+                Number(
+                  document.getElementById(`loc${i}treat${k}rep${j}`).value
+                ) || 0;
+              total += cellValue;
+              columnTotals[j - 1] += cellValue; // Correctly accumulating for each replication column
+            }
+            let mean = total / repCount;
+            document.getElementById(`loc${i}treat${k}total`).innerText = total;
+            document.getElementById(`loc${i}treat${k}mean`).innerText =
+              mean.toFixed(2);
+            grandTotal += total;
+          }
+
+          // Check if the total row already exists, remove it before adding a new one
+          let table = document.querySelector(
+            `.location-section:nth-child(${i}) table`
+          );
+          let existingTotalRow = table.querySelector(".total-row");
+          if (existingTotalRow) {
+            table.deleteRow(existingTotalRow.rowIndex);
+          }
+
+          // Add a new row at the bottom of the table to show replication (column) totals
+          let totalRow = table.insertRow();
+          totalRow.classList.add("total-row"); // Class added for easier identification
+          totalRow.innerHTML =
+            `<td><strong>Total</strong></td>` +
+            columnTotals
+              .map((total) => `<td><strong>${total}</strong></td>`)
+              .join("") +
+            `<td><strong>Grand Total = ${grandTotal}</strong></td><td></td>`;
+
+          // Display the grand total
+          document.getElementById(`grandTotal${i}`).innerText = grandTotal;
+        }
+      }
+    </script>
+  </body>
+</html>
