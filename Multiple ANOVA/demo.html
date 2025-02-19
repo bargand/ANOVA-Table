@@ -8,6 +8,7 @@
       body {
         font-family: Arial, sans-serif;
         margin: 20px;
+        background-color: #f8f9fa;
       }
       .container {
         display: flex;
@@ -15,17 +16,25 @@
         gap: 20px;
       }
       .location-section {
-        border: 1px solid #ccc;
-        padding: 10px;
-        border-radius: 5px;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: fit-content;
       }
-      table,
-      th,
-      td {
-        border: 1px solid black;
+      table {
+        width: 100%;
         border-collapse: collapse;
-        padding: 5px;
+        margin-top: 10px;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 8px;
         text-align: center;
+      }
+      th {
+        background-color: #007bff;
+        color: white;
       }
       .summary {
         margin-top: 10px;
