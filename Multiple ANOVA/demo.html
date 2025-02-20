@@ -27,7 +27,8 @@
         border-collapse: collapse;
         margin-top: 10px;
       }
-      th, td {
+      th,
+      td {
         border: 1px solid black;
         padding: 8px;
         text-align: center;
@@ -208,6 +209,24 @@
           let fcalTreatment = meanTreatmentSS / meanErrorSS;
           let fcalReplication = meanReplicationSS / meanErrorSS;
 
+          let MeanOfGrandMean = (grandTotal / N).toFixed(2);
+
+          //Error co-efficient of variance
+          let EnvRut = Math.sqrt(meanErrorSS);
+          let EnvironCoffVariance = (EnvRut / MeanOfGrandMean).toFixed(2);
+
+          //Genotypic co-efficient of varience
+          let genotype = ((meanTreatmentSS - meanErrorSS) / repCount).toFixed(
+            2
+          );
+          let GeanRut = Math.sqrt(genotype);
+          let GeanCoffVariance = (GeanRut / MeanOfGrandMean).toFixed(2);
+
+          //Phenotypic Co-efficient of Variance
+          let phenotype = (parseFloat(genotype) + meanErrorSS).toFixed(2);
+          let PhinoRut = Math.sqrt(phenotype);
+          let PhenoCoffVariance = (PhinoRut / MeanOfGrandMean).toFixed(2);
+
           // Generate ANOVA Table
           let anovaTableHTML = `
             <h3>ANOVA Table for Location ${i}</h3>
@@ -255,6 +274,67 @@
               <td>σ²e=<br><br><b>${meanErrorSS.toFixed(2)}</b></td>
             </tr>
           </table>
+          <br>
+          
+
+                <div class="formula-box">
+            <p>
+              <strong
+                >E<sub>MSS</sub> for Treatment: σ²e + Rσ²g =${meanTreatmentSS.toFixed(
+                  2
+                )}</strong
+              >
+            </p>
+            <p>
+              <strong
+                >F<sub>MSS</sub> for Error: σ²e =${meanErrorSS.toFixed(
+                  2
+                )}</strong
+              >
+            </p>
+            <p>
+              <strong
+                >F<sub>MSS</sub> for Genotype: σ²g = [{(σ²e + Rσ²g) - σ²e}/r] =${(
+                  (meanTreatmentSS - meanErrorSS) /
+                  repCount
+                ).toFixed(2)}</strong
+              >
+            </p>
+            <p>
+              <strong
+                >F<sub>MSS</sub> for Phenotype: σ²p = (σ²g + σ²e) =${(
+                  parseFloat(
+                    ((meanTreatmentSS - meanErrorSS) / repCount).toFixed(2)
+                  ) + meanErrorSS
+                ).toFixed(2)}</strong
+              >
+            </p>
+          </div>
+
+
+
+              <div class="formula-box">
+                <p>
+                  <strong
+                    >Mean Deviation Of Grand Total (GM): (GT / N) = ${MeanOfGrandMean}</strong
+                  >
+                </p>
+                <p>
+                  <strong
+                    >Error Co-efficient of variance: (√σe) / GM = ${EnvironCoffVariance}</strong
+                  >
+                </p>
+                <p>
+                  <strong
+                    >Genotypic Co-efficient of variance: (√σg) / GM = ${GeanCoffVariance}</strong
+                  >
+                </p>
+                <p>
+                  <strong
+                    >Phenotypic Co-efficient of variance: (√σp) / GM =${PhenoCoffVariance}</strong
+                  >
+                </p>
+              </div>
           `;
 
           // Find the location section to insert results

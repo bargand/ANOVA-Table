@@ -246,6 +246,44 @@
               <td>σ²e=<br><br><b>${meanErrorSS.toFixed(2)}</b></td>
             </tr>
           </table>
+          <br>
+          
+
+          <div class="formula-box">
+      <p>
+        <strong
+          >E<sub>MSS</sub> for Treatment: σ²e + Rσ²g =${meanTreatmentSS.toFixed(
+            2
+          )}
+          <span id="FmssTreatment">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >F<sub>MSS</sub> for Error: σ²e =${meanErrorSS.toFixed(2)}
+          <span id="FmssError">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >F<sub>MSS</sub> for Genotype: σ²g = [{(σ²e + Rσ²g) - σ²e}/r] =${(
+            (meanTreatmentSS - meanErrorSS) /
+            repCount
+          ).toFixed(2)}
+          <span id="FmssGenotype">0</span></strong
+        >
+      </p>
+      <p>
+        <strong
+          >F<sub>MSS</sub> for Phenotype: σ²p = (σ²g + σ²e) =${(
+            parseFloat(
+              ((meanTreatmentSS - meanErrorSS) / repCount).toFixed(2)
+            ) + meanErrorSS
+          ).toFixed(2)}
+          <span id="FmssPhenotype">0</span></strong
+        >
+      </p>
+    </div>
           `;
 
           // Find the location section to insert results
