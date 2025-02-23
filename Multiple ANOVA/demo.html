@@ -46,7 +46,7 @@
     <h2>Multiple Location ANOVA</h2>
     <label for="locationCount">Enter Number of Locations:</label>
     <input type="number" id="locationCount" min="1" size="5"/>
-    <button onclick="generateInputFields()">Next</button>
+    <button id="nextBtn"  onclick="generateInputFields()">Next</button>
     <div id="inputFields"></div>
     <button
       id="generateTablesBtn"
@@ -59,7 +59,7 @@
     <button id="calculateBtn" style="display: none" onclick="calculateTotals()">
       Calculate
     </button>
-    <button onclick="generateSummaryTable()">Generate Summary Table</button>
+    <button id="summaryBtn" onclick="generateSummaryTable()" style="display: none;">Generate Summary Table</button>
     <div id="summaryTableContainer"></div>
 
     <script>
@@ -79,11 +79,13 @@
                     </div>
                 `;
         }
+        document.getElementById("nextBtn").disabled = true;
         document.getElementById("generateTablesBtn").style.display = "block";
       }
 
       function generateTables() {
         const locationCount = document.getElementById("locationCount").value;
+        if (!locationCount || locationCount < 1) return;
         const tablesContainer = document.getElementById("tablesContainer");
         tablesContainer.innerHTML = "";
 
@@ -125,6 +127,7 @@
 
           tablesContainer.innerHTML += tableHTML;
         }
+        document.getElementById("generateTablesBtn").disabled = true;
         document.getElementById("calculateBtn").style.display = "block";
       }
 
@@ -428,6 +431,8 @@
           // Insert the ANOVA Table in the location section
           locationSection.insertAdjacentHTML("beforeend", anovaTableHTML);
         }
+        document.getElementById("calculateBtn").disabled = true;
+        document.getElementById("summaryBtn").style.display = "block";
       }
       function generateSummaryTable() {
         const locationCount = document.getElementById("locationCount").value;
@@ -499,6 +504,7 @@
         summaryHTML += `</table>`;
 
         // Display Summary Table
+        document.getElementById("summaryBtn").disabled = true;
         document.getElementById("summaryTableContainer").innerHTML =
           summaryHTML;
       }
