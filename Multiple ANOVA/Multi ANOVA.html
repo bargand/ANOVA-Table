@@ -33,12 +33,8 @@
         padding: 8px;
         text-align: center;
       }
-      th {
-        background-color: #606060;
-        color: white;
-      }
       .summary {
-        margin-top: 10px;
+        margin-top: 20px;
       }
       .formula-box {
         border: 1px solid black;
@@ -47,17 +43,19 @@
         margin: 20px auto;
         background-color: #f9f9f9;
       }
-      /* .Display_Divided {
-        border-top: 1px solid #000;
-        margin: 2px 0;
-      } */
     </style>
   </head>
   <body>
     <h2>Multiple Location ANOVA</h2>
     <label for="locationCount">Enter Number of Locations:</label>
-    <input type="number" id="locationCount" min="1" />
-    <button onclick="generateInputFields()">Next</button>
+    <input
+      type="number"
+      id="locationCount"
+      min="1"
+      size="5"
+      oninput="resetButtons()"
+    />
+    <button id="nextBtn" onclick="generateInputFields()">Next</button>
     <div id="inputFields"></div>
     <button
       id="generateTablesBtn"
@@ -70,8 +68,23 @@
     <button id="calculateBtn" style="display: none" onclick="calculateTotals()">
       Calculate
     </button>
+    <button
+      id="summaryBtn"
+      onclick="generateSummaryTable()"
+      style="display: none"
+    >
+      Generate Summary Table
+    </button>
+    <div id="summaryTableContainer"></div>
 
     <script>
+      function resetButtons() {
+        document.getElementById("nextBtn").disabled = false;
+        document.getElementById("generateTablesBtn").disabled = false;
+        document.getElementById("calculateBtn").disabled = false;
+        document.getElementById("summaryBtn").disabled = false;
+      }
+
       function generateInputFields() {
         const locationCount = document.getElementById("locationCount").value;
         const inputFieldsDiv = document.getElementById("inputFields");
@@ -82,17 +95,19 @@
                     <div>
                         <h4>Location ${i}</h4>
                         <label>Replication Count:</label>
-                        <input type="number" id="replicationCount${i}" min="1">
+                        <input type="number" id="replicationCount${i}" min="1" size="5">
                         <label>Treatment Count:</label>
-                        <input type="number" id="treatmentCount${i}" min="1">
+                        <input type="number" id="treatmentCount${i}" min="1" size="5">
                     </div>
                 `;
         }
+        document.getElementById("nextBtn").disabled = true;
         document.getElementById("generateTablesBtn").style.display = "block";
       }
 
       function generateTables() {
         const locationCount = document.getElementById("locationCount").value;
+        if (!locationCount || locationCount < 1) return;
         const tablesContainer = document.getElementById("tablesContainer");
         tablesContainer.innerHTML = "";
 
@@ -118,7 +133,7 @@
             tableHTML += `<tr>
                         <td>Treatment ${k}</td>`;
             for (let j = 1; j <= repCount; j++) {
-              tableHTML += `<td><input type="number" id="loc${i}treat${k}rep${j}" placeholder="0"></td>`;
+              tableHTML += `<td><input type="number" id="loc${i}treat${k}rep${j}" placeholder="0" size="5"></td>`;
             }
             tableHTML += `<td id="loc${i}treat${k}total">0</td>
                                   <td id="loc${i}treat${k}mean">0</td>
@@ -134,6 +149,7 @@
 
           tablesContainer.innerHTML += tableHTML;
         }
+        document.getElementById("generateTablesBtn").disabled = true;
         document.getElementById("calculateBtn").style.display = "block";
       }
 
@@ -437,6 +453,82 @@
           // Insert the ANOVA Table in the location section
           locationSection.insertAdjacentHTML("beforeend", anovaTableHTML);
         }
+        document.getElementById("calculateBtn").disabled = true;
+        document.getElementById("summaryBtn").style.display = "block";
+      }
+      function generateSummaryTable() {
+        const locationCount = document.getElementById("locationCount").value;
+        let maxTreatments = 0;
+
+        // Find max treatments across locations
+        for (let i = 1; i <= locationCount; i++) {
+          let treatCount = parseInt(
+            document.getElementById(`treatmentCount${i}`).value
+          );
+          if (treatCount > maxTreatments) {
+            maxTreatments = treatCount;
+          }
+        }
+
+        let summaryHTML = `<h3>Overall Summary Table</h3>
+                     <table border="1">
+                     <tr>
+                       <th>Treatment</th>`;
+
+        // Add column headers for each location
+        for (let i = 1; i <= locationCount; i++) {
+          summaryHTML += `<th>Location ${i}</th>`;
+        }
+        summaryHTML += `<th>Total</th></tr>`; // Total Column
+
+        let grandTotal = 0;
+        let locationTotals = new Array(parseInt(locationCount)).fill(0); // Store total for each location
+
+        // Iterate through treatments (rows)
+        for (let t = 1; t <= maxTreatments; t++) {
+          let rowTotal = 0;
+          summaryHTML += `<tr><td><strong>Treatment ${t}</strong></td>`;
+
+          // Iterate through locations (columns)
+          for (let i = 1; i <= locationCount; i++) {
+            let treatCount = parseInt(
+              document.getElementById(`treatmentCount${i}`).value
+            );
+            let meanValue =
+              t <= treatCount
+                ? parseFloat(
+                    document.getElementById(`loc${i}treat${t}mean`).innerText
+                  ) || 0
+                : 0;
+
+            summaryHTML += `<td>${meanValue.toFixed(2)}</td>`;
+            rowTotal += meanValue;
+            locationTotals[i - 1] += meanValue; // Correctly storing total for each location
+          }
+
+          summaryHTML += `<td><strong>${rowTotal.toFixed(
+            2
+          )}</strong></td></tr>`;
+          grandTotal += rowTotal;
+        }
+
+        // Add Total Row (Sum of each column)
+        summaryHTML += `<tr><td><strong>Total</strong></td>`;
+        for (let i = 0; i < locationCount; i++) {
+          summaryHTML += `<td><strong>${locationTotals[i].toFixed(
+            2
+          )}</strong></td>`;
+        }
+        summaryHTML += `<td><strong>${grandTotal.toFixed(
+          2
+        )}</strong></td></tr>`;
+
+        summaryHTML += `</table>`;
+
+        // Display Summary Table
+        document.getElementById("summaryBtn").disabled = true;
+        document.getElementById("summaryTableContainer").innerHTML =
+          summaryHTML;
       }
     </script>
   </body>
