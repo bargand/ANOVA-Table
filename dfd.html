@@ -39,12 +39,16 @@
       .summary {
         margin-top: 10px;
       }
+      button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
     </style>
   </head>
   <body>
     <h2>Multiple Location ANOVA</h2>
     <label for="locationCount">Enter Number of Locations:</label>
-    <input type="number" id="locationCount" min="1" size="5"/>
+    <input type="number" id="locationCount" min="1" size="5" oninput="resetButtons()"/>
     <button id="nextBtn" onclick="generateInputFields()">Next</button>
     <div id="inputFields"></div>
     <button id="generateTablesBtn" style="display: none" onclick="generateTables()">Generate Tables</button>
@@ -54,6 +58,13 @@
     <div id="summaryTableContainer"></div>
 
     <script>
+      function resetButtons() {
+        document.getElementById("nextBtn").disabled = false;
+        document.getElementById("generateTablesBtn").disabled = false;
+        document.getElementById("calculateBtn").disabled = false;
+        document.getElementById("summaryBtn").disabled = false;
+      }
+      
       function generateInputFields() {
         const locationCount = document.getElementById("locationCount").value;
         if (!locationCount || locationCount < 1) return;
@@ -66,9 +77,9 @@
             <div>
               <h4>Location ${i}</h4>
               <label>Replication Count:</label>
-              <input type="number" id="replicationCount${i}" min="1" size="5">
+              <input type="number" id="replicationCount${i}" min="1" size="5" oninput="resetButtons()">
               <label>Treatment Count:</label>
-              <input type="number" id="treatmentCount${i}" min="1" size="5">
+              <input type="number" id="treatmentCount${i}" min="1" size="5" oninput="resetButtons()">
             </div>`;
         }
         document.getElementById("nextBtn").disabled = true;
@@ -101,7 +112,7 @@
             tableHTML += `<tr>
                 <td>Treatment ${k}</td>`;
             for (let j = 1; j <= repCount; j++) {
-              tableHTML += `<td><input type="number" id="loc${i}treat${k}rep${j}" placeholder="0" size="5"></td>`;
+              tableHTML += `<td><input type="number" id="loc${i}treat${k}rep${j}" placeholder="0" size="5" oninput="resetButtons()"></td>`;
             }
             tableHTML += `<td id="loc${i}treat${k}total">0</td>
                 <td id="loc${i}treat${k}mean">0</td>

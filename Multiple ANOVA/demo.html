@@ -33,20 +33,29 @@
         padding: 8px;
         text-align: center;
       }
-      th {
-        background-color: #007bff;
-        color: white;
-      }
       .summary {
-        margin-top: 10px;
+        margin-top: 20px;
+      }
+      .formula-box {
+        border: 1px solid black;
+        padding: 10px;
+        width: 60%;
+        margin: 20px auto;
+        background-color: #f9f9f9;
       }
     </style>
   </head>
   <body>
     <h2>Multiple Location ANOVA</h2>
     <label for="locationCount">Enter Number of Locations:</label>
-    <input type="number" id="locationCount" min="1" size="5"/>
-    <button id="nextBtn"  onclick="generateInputFields()">Next</button>
+    <input
+      type="number"
+      id="locationCount"
+      min="1"
+      size="5"
+      oninput="resetButtons()"
+    />
+    <button id="nextBtn" onclick="generateInputFields()">Next</button>
     <div id="inputFields"></div>
     <button
       id="generateTablesBtn"
@@ -59,10 +68,23 @@
     <button id="calculateBtn" style="display: none" onclick="calculateTotals()">
       Calculate
     </button>
-    <button id="summaryBtn" onclick="generateSummaryTable()" style="display: none;">Generate Summary Table</button>
+    <button
+      id="summaryBtn"
+      onclick="generateSummaryTable()"
+      style="display: none"
+    >
+      Generate Summary Table
+    </button>
     <div id="summaryTableContainer"></div>
 
     <script>
+      function resetButtons() {
+        document.getElementById("nextBtn").disabled = false;
+        document.getElementById("generateTablesBtn").disabled = false;
+        document.getElementById("calculateBtn").disabled = false;
+        document.getElementById("summaryBtn").disabled = false;
+      }
+
       function generateInputFields() {
         const locationCount = document.getElementById("locationCount").value;
         const inputFieldsDiv = document.getElementById("inputFields");
