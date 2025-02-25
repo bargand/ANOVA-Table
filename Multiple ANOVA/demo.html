@@ -619,16 +619,16 @@
         <p><strong>Correction Factor (CF):</strong> (${grandTotal}² / ${N}) = <b>${correctionFactor.toFixed(
           2
         )}</b></p>
-        <p><strong>Total Sum of Squares (TSS):</strong> (Sum of Squares of all values - CF) = <b>${totalSumOfSquares.toFixed(
+        <p><strong>Total Sum of Squares (TSS):</strong> (${sumOfSquares} - ${correctionFactor}) = <b>${totalSumOfSquares.toFixed(
           2
         )}</b></p>
-        <p><strong>Treatment Sum of Squares (TrSS):</strong> ((Sum of Squares of Treatment Totals / Locations) - CF) = <b>${treatmentSumOfSquares.toFixed(
+        <p><strong>Treatment Sum of Squares (TrSS):</strong> (${treatmentSquaresSum} / ${locationCount} - ${correctionFactor}) = <b>${treatmentSumOfSquares.toFixed(
           2
         )}</b></p>
-        <p><strong>Replication Sum of Squares (RSS):</strong> ((Sum of Squares of Replication Totals / Treatments) - CF) = <b>${replicationSumOfSquares.toFixed(
+        <p><strong>Replication Sum of Squares (RSS):</strong> (${replicationSquaresSum} / ${maxTreatments} - ${correctionFactor}) = <b>${replicationSumOfSquares.toFixed(
           2
         )}</b></p>
-        <p><strong>Error Sum of Squares (ESS):</strong> (TSS - (TrSS + RSS)) = <b>${errorSumOfSquares.toFixed(
+        <p><strong>Error Sum of Squares (ESS):</strong> (${totalSumOfSquares} - (${treatmentSumOfSquares} + ${replicationSumOfSquares})) = <b>${errorSumOfSquares.toFixed(
           2
         )}</b></p>
     </div>`;
