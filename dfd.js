@@ -72,3 +72,7 @@ function generateSummaryTable() {
     document.getElementById("summaryTableContainer").innerHTML =
       summaryHTML;
   }
+
+  console.log(`Treatment: ${maxTreatments}`);
+  console.log(`Location/Replication: ${locationCount}`);
+  console.log(`grand total ${grandTotal}`)
