@@ -641,14 +641,13 @@
         console.log(maxTreatments - 1); //treatment-1
         console.log(locationCount); //replication
         console.log(locationCount - 1); //replication-1
-        console.log((maxTreatments-1) * (locationCount-1)); //error
+        console.log((maxTreatments - 1) * (locationCount - 1)); //error
         console.log(treatmentSumOfSquares.toFixed(2)); //total treatment sum of square
         console.log(replicationSumOfSquares.toFixed(2)); //total replication sum of square
         console.log(errorSumOfSquares.toFixed(2)); //error sum of square
 
-
-        console.log((treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1))); //TrSS MSS (A)
-        console.log((replicationSquaresSum.toFixed(2) / (locationCount - 1))); //RSS MSS (B)
+        console.log(treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1)); //TrSS MSS (A)
+        console.log(replicationSquaresSum.toFixed(2) / (locationCount - 1)); //RSS MSS (B)
         console.log(
           errorSumOfSquares.toFixed(2) /
             (maxTreatments.toFixed(2) * locationCount) //ESS MSS (C)
@@ -660,10 +659,10 @@
           errorSumOfSquares.toFixed(2) /
           (maxTreatments.toFixed(2) * locationCount); //ESS MSS (C)
 
-        console.log(A/C); //Fcal A/C
-        console.log(B/C) //Fcal B/C
-        console.log(`σe + Rσ2g = ${A}`)
-        console.log(`σe = ${C}`)
+        console.log(A / C); //Fcal A/C
+        console.log(B / C); //Fcal B/C
+        console.log(`σe + Rσ2g = ${A}`);
+        console.log(`σe = ${C}`);
       }
     </script>
   </body>
