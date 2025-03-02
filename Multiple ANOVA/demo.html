@@ -647,17 +647,17 @@
         console.log(errorSumOfSquares.toFixed(2)); //error sum of square
 
         console.log(treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1)); //TrSS MSS (A)
-        console.log(replicationSquaresSum.toFixed(2) / (locationCount - 1)); //RSS MSS (B)
+        console.log(replicationSumOfSquares.toFixed(2) / (locationCount - 1)); //RSS MSS (B)
+
+        let Z = (maxTreatments - 1) * (locationCount - 1);
         console.log(
-          errorSumOfSquares.toFixed(2) /
-            (maxTreatments.toFixed(2) * locationCount) //ESS MSS (C)
+          errorSumOfSquares.toFixed(2) / Z //ESS MSS (C)
         );
 
         let A = treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1);
         let B = replicationSumOfSquares.toFixed(2) / (locationCount - 1);
         let C =
-          errorSumOfSquares.toFixed(2) /
-          (maxTreatments.toFixed(2) * locationCount); //ESS MSS (C)
+        errorSumOfSquares.toFixed(2) / Z; //ESS MSS (C)
 
         console.log(A / C); //Fcal A/C
         console.log(B / C); //Fcal B/C
