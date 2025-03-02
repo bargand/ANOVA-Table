@@ -76,6 +76,7 @@
       Generate Summary Table
     </button>
     <div id="summaryTableContainer"></div>
+    <div id="SummaryAnovaResults"></div>
 
     <script>
       function resetButtons() {
@@ -637,32 +638,82 @@
           summaryStatsHTML;
         document.getElementById("calculateSummaryBtn").disabled = true; // Disable the button after calculation
 
-        console.log(maxTreatments.toFixed(2)); //treatment
-        console.log(maxTreatments - 1); //treatment-1
-        console.log(locationCount); //replication
-        console.log(locationCount - 1); //replication-1
-        console.log((maxTreatments - 1) * (locationCount - 1)); //error
-        console.log(treatmentSumOfSquares.toFixed(2)); //total treatment sum of square
-        console.log(replicationSumOfSquares.toFixed(2)); //total replication sum of square
-        console.log(errorSumOfSquares.toFixed(2)); //error sum of square
+        //generate ANOVA table
 
-        console.log(treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1)); //TrSS MSS (A)
-        console.log(replicationSumOfSquares.toFixed(2) / (locationCount - 1)); //RSS MSS (B)
+        // console.log(maxTreatments.toFixed(2)); //treatment
+        // console.log(maxTreatments - 1); //treatment-1
+        // console.log(locationCount); //replication
+        // console.log(locationCount - 1); //replication-1
+
+        // console.log((maxTreatments - 1) * (locationCount - 1)); //error
+        // console.log(treatmentSumOfSquares.toFixed(2)); //total treatment sum of square
+        // console.log(replicationSumOfSquares.toFixed(2)); //total replication sum of square
+        // console.log(errorSumOfSquares.toFixed(2)); //error sum of square
+
+        // console.log(treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1)); //TrSS MSS (A)
+        // console.log(replicationSumOfSquares.toFixed(2) / (locationCount - 1)); //RSS MSS (B)
 
         let Z = (maxTreatments - 1) * (locationCount - 1);
-        console.log(
-          errorSumOfSquares.toFixed(2) / Z //ESS MSS (C)
-        );
+        // console.log(
+        //   errorSumOfSquares.toFixed(2) / Z //ESS MSS (C)
+        // );
 
         let A = treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1);
         let B = replicationSumOfSquares.toFixed(2) / (locationCount - 1);
-        let C =
-        errorSumOfSquares.toFixed(2) / Z; //ESS MSS (C)
+        let C = errorSumOfSquares.toFixed(2) / Z; //ESS MSS (C)
 
-        console.log(A / C); //Fcal A/C
-        console.log(B / C); //Fcal B/C
-        console.log(`σe + Rσ2g = ${A}`);
-        console.log(`σe = ${C}`);
+        let I = (A / C).toFixed(2);
+        let J = (B / C).toFixed(2);
+
+        // console.log(A / C); //Fcal A/C
+        // console.log(B / C); //Fcal B/C
+        // console.log(`σe + Rσ2g = ${A}`);
+        // console.log(`σe = ${C}`);
+
+        //ANOVA table for the summary table
+
+        let SummaryAnovaTableHTML = `
+          <table>
+            <tr>
+              <th>Source of Variation</th>
+              <th>Degree of Freedom (d.f)</th>
+              <th>Sum of Square (SS)</th>
+              <th>Mean Sum of Square (MSS)</th>
+              <th>F<sub>cal</sub></th>
+              <th>E<sub>MSS</sub></th>
+            </tr>
+            <tr>
+              <td><b>Treatment (T)</b></td>
+              <td>(Total number of treatments - 1)<br><br><b>${
+                maxTreatments - 1
+              }</b></td>
+              <td>TrSS=<br><br><b>${treatmentSumOfSquares.toFixed(2)}</b></td>
+              <td><b>(A)→</b>TrSS<hr class="Display_Divided">(Total number of treatments - 1)<br><br><b>${A}</b></td>
+              <td>A<hr class="Display_Divided">C<br><br><b>${I}</b></td>
+              <td>(σ²e + Rσ²g)<br><br><b>${A}</b></td>
+            </tr>
+            <tr>
+              <td><b>Replication (R)</b></td>
+              <td>(Total number of replication - 1)<br><br><b>${
+                locationCount - 1
+              }</b></td>
+              <td>RSS=<br><br><b>${replicationSumOfSquares.toFixed(2)}</b></td>
+              <td><RSS><b>(B)→</b>RSS<hr class="Display_Divided">(Total number of replication - 1)<br><br><b>${B}</b></td>
+              <td>B<hr class="Display_Divided">C<br><br><b>${J}</b></td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td><b>Error (E)</b></td>
+              <td><b>(Z)→</b> (Total number of treatments - 1) ×<br> (Total number of replication - 1)<br><br>${Z}</td>
+              <td>ESS=<br><br><b>${errorSumOfSquares.toFixed(2)}</b></td>
+              <td><b>(C)→</b> RSS<hr class="Display_Divided">Z<br><br><b>${C}</b></td>
+              <td>-</td>
+              <td>σ²e=<br><br><b>${C}</b></td>
+            </tr>
+          </table>
+        `;
+        document.getElementById("SummaryAnovaResults").innerHTML =
+          SummaryAnovaTableHTML;
       }
     </script>
   </body>
