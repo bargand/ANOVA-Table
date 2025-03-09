@@ -156,6 +156,7 @@
 
       function calculateTotals() {
         const locationCount = document.getElementById("locationCount").value;
+        let totalErrors = 1; // Initialize totalErrors to 1 for multiplication
 
         for (let i = 1; i <= locationCount; i++) {
           const repCount = parseInt(
@@ -227,6 +228,7 @@
           let dfTreatment = treatCount - 1;
           let dfReplication = repCount - 1;
           let dfError = dfTreatment * dfReplication;
+          totalErrors *= dfError; // Multiply the total errors
 
           // Mean Sum of Squares (MSS)
           let meanTreatmentSS = finalTreatmentSum / dfTreatment;
@@ -456,6 +458,8 @@
         }
         document.getElementById("calculateBtn").disabled = true;
         document.getElementById("summaryBtn").style.display = "block";
+        // Log the total errors for all locations
+        console.log(`The total errors for all locations is: ${totalErrors}`);
       }
 
       function generateSummaryTable() {
@@ -715,7 +719,7 @@
         document.getElementById("SummaryAnovaResults").innerHTML =
           SummaryAnovaTableHTML;
       }
-      console.log("debargha Nandi2")
+      console.log("debargha Nandi2");
     </script>
   </body>
 </html>
