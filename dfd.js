@@ -307,3 +307,4 @@ function calculateTotals() {
   // Log the total errors for all locations
   console.log(`The total errors for all locations is: ${totalErrors}`);
 }
+console.log(12)
