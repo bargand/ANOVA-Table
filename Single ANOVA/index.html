@@ -203,6 +203,12 @@
       </p>
     </div>
 
+    <button id="downloadBtn">Download Now</button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <script>
       function generateTable() {
         let treatments = document.getElementById("treatmentCount").value;
@@ -457,7 +463,9 @@
         let EnvironCoffVariance = (EnvRut / MeanOfGrandMean).toFixed(2);
         document.getElementById(
           "EnvironCoffVariance"
-        ).innerHTML = `√${meanErrorSS.toFixed(2)} / ${MeanOfGrandMean} = ${EnvironCoffVariance}`;
+        ).innerHTML = `√${meanErrorSS.toFixed(
+          2
+        )} / ${MeanOfGrandMean} = ${EnvironCoffVariance}`;
 
         //Genotypic co-efficient of varience
         let GeanRut = Math.sqrt(genotype);
@@ -472,6 +480,57 @@
         document.getElementById(
           "PhenoCoffVariance"
         ).innerHTML = `√${phenotype} / ${MeanOfGrandMean} = ${PhenoCoffVariance}`;
+      }
+
+      document
+        .getElementById("downloadBtn")
+        .addEventListener("click", function () {
+          generatePDF();
+          generateExcel();
+        });
+
+      function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        let doc = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+        });
+
+        window.scrollTo(0, 0); // Ensure full-page capture
+        html2canvas(document.body, {
+          scale: 2,
+          useCORS: true,
+        }).then((canvas) => {
+          let imgData = canvas.toDataURL("image/png");
+          let imgWidth = 210; // A4 width in mm
+          let pageHeight = 297; // A4 height in mm
+          let imgHeight = (canvas.height * imgWidth) / canvas.width;
+          let heightLeft = imgHeight;
+          let position = 0;
+
+          // Function to add gray transparent header text
+          function addHeader(doc) {
+            doc.setTextColor(200, 200, 200); // Light gray color
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.text("BARGAND", 5, 10, { opacity: 0.5 }); // Top-left corner, semi-transparent
+          }
+
+          doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+          addHeader(doc); // Add header on first page
+          heightLeft -= pageHeight;
+
+          while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+            doc.addPage();
+            doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+            addHeader(doc); // Add header on each new page
+            heightLeft -= pageHeight;
+          }
+
+          doc.save("ANOVA_Calculations.pdf");
+        });
       }
     </script>
   </body>
