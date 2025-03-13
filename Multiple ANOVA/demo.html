@@ -156,7 +156,10 @@
 
       function calculateTotals() {
         const locationCount = document.getElementById("locationCount").value;
-        let totalErrorsSum = 0;
+
+        let totalErrorsSumPooled = 0;
+        let totalESSumPooled = 0; // Store sum of Error Sum of Squares (ESS) across all locations
+        let totalMSSumPooled = 0; // Store sum of Mean Sum of Squares (MSS) across all locations
 
         for (let i = 1; i <= locationCount; i++) {
           const repCount = parseInt(
@@ -228,12 +231,15 @@
           let dfTreatment = treatCount - 1;
           let dfReplication = repCount - 1;
           let dfError = dfTreatment * dfReplication; // Error for this location
-          totalErrorsSum += dfError; // Accumulate errors
+          totalErrorsSumPooled += dfError; // Accumulate errors
+          totalESSumPooled += errorSumOfSquares; // Accumulate ESS
 
           // Mean Sum of Squares (MSS)
           let meanTreatmentSS = finalTreatmentSum / dfTreatment;
           let meanReplicationSS = finalReplicationSum / dfReplication;
           let meanErrorSS = errorSumOfSquares / dfError;
+
+          totalMSSumPooled += meanErrorSS; // Accumulate MSS
 
           // F-Calculated (Fcal)
           let fcalTreatment = meanTreatmentSS / meanErrorSS;
@@ -455,13 +461,15 @@
 
           // Insert the ANOVA Table in the location section
           locationSection.insertAdjacentHTML("beforeend", anovaTableHTML);
-
-          console.log(`Location ${i} Error: ${dfError}`); // Console log error per location
         }
         document.getElementById("calculateBtn").disabled = true;
         document.getElementById("summaryBtn").style.display = "block";
 
-        console.log(`Total Error Sum Across All Locations: ${totalErrorsSum}`);
+        console.log(`✅ Total Errors Sum Pooled: ${totalErrorsSumPooled}`);
+        console.log(`✅ Total ESS Pooled: ${totalESSumPooled.toFixed(2)}`);
+        console.log(`✅ Total MSS Pooled: ${totalMSSumPooled.toFixed(2)}`);
+
+        return { totalErrorsSumPooled, totalESSumPooled, totalMSSumPooled };
       }
 
       function generateSummaryTable() {
@@ -548,6 +556,9 @@
         let treatmentTotals = [];
         let sumOfSquares = 0;
 
+        const { totalErrorsSumPooled, totalESSumPooled, totalMSSumPooled } =
+          calculateTotals();
+
         // Find max treatments and calculate grand total
         for (let t = 1; t <= locationCount; t++) {
           let treatCount = parseInt(
@@ -555,6 +566,11 @@
           );
           maxTreatments = Math.max(maxTreatments, treatCount);
         }
+
+        console.log(`💡 Using Global Values in Summary Table`);
+        console.log(`✅ Pooled Errors Sum: ${totalErrorsSumPooled}`);
+        console.log(`✅ Pooled ESS: ${totalESSumPooled.toFixed(2)}`);
+        console.log(`✅ Pooled MSS: ${totalMSSumPooled.toFixed(2)}`);
 
         // Compute Treatment Totals and Sum of Squares
         for (let t = 1; t <= maxTreatments; t++) {
@@ -644,25 +660,7 @@
           summaryStatsHTML;
         document.getElementById("calculateSummaryBtn").disabled = true; // Disable the button after calculation
 
-        //generate ANOVA table
-
-        // console.log(maxTreatments.toFixed(2)); //treatment
-        // console.log(maxTreatments - 1); //treatment-1
-        // console.log(locationCount); //replication
-        // console.log(locationCount - 1); //replication-1
-
-        // console.log((maxTreatments - 1) * (locationCount - 1)); //error
-        // console.log(treatmentSumOfSquares.toFixed(2)); //total treatment sum of square
-        // console.log(replicationSumOfSquares.toFixed(2)); //total replication sum of square
-        // console.log(errorSumOfSquares.toFixed(2)); //error sum of square
-
-        // console.log(treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1)); //TrSS MSS (A)
-        // console.log(replicationSumOfSquares.toFixed(2) / (locationCount - 1)); //RSS MSS (B)
-
         let Z = (maxTreatments - 1) * (locationCount - 1);
-        // console.log(
-        //   errorSumOfSquares.toFixed(2) / Z //ESS MSS (C)
-        // );
 
         let A = treatmentSumOfSquares.toFixed(2) / (maxTreatments - 1);
         let B = replicationSumOfSquares.toFixed(2) / (locationCount - 1);
@@ -670,13 +668,6 @@
 
         let I = (A / C).toFixed(2);
         let J = (B / C).toFixed(2);
-
-        // console.log(A / C); //Fcal A/C
-        // console.log(B / C); //Fcal B/C
-        // console.log(`σe + Rσ2g = ${A}`);
-        // console.log(`σe = ${C}`);
-
-        //ANOVA table for the summary table
 
         let SummaryAnovaTableHTML = `
           <table>
@@ -715,6 +706,20 @@
               <td><b>(C)→</b> RSS<hr class="Display_Divided">Z<br><br><b>${C}</b></td>
               <td>-</td>
               <td>σ²e=<br><br><b>${C}</b></td>
+            </tr>
+
+
+            <tr>
+                <td><b>Pooled Error</b></td>
+                <td>Sum of individual locations<br><br>${totalErrorsSumPooled}</td>
+                <td>Sum of individual locations SS<br><br><b>${totalESSumPooled.toFixed(
+                  2
+                )}</b></td>
+                <td><b>Sum of individual locations MSS</b><br><br>${totalMSSumPooled.toFixed(
+                  2
+                )}</td>
+                <td>-</td>
+                <td>σ²e=<br><br><b>${totalMSSumPooled.toFixed(2)}</b></td>
             </tr>
           </table>
         `;
