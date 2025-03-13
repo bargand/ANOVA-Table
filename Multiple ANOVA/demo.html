@@ -156,7 +156,7 @@
 
       function calculateTotals() {
         const locationCount = document.getElementById("locationCount").value;
-        let totalErrors = 1; // Initialize totalErrors to 1 for multiplication
+        let totalErrorsSum = 0;
 
         for (let i = 1; i <= locationCount; i++) {
           const repCount = parseInt(
@@ -227,8 +227,8 @@
           // Degrees of Freedom (df)
           let dfTreatment = treatCount - 1;
           let dfReplication = repCount - 1;
-          let dfError = dfTreatment * dfReplication;
-          totalErrors *= dfError; // Multiply the total errors
+          let dfError = dfTreatment * dfReplication; // Error for this location
+          totalErrorsSum += dfError; // Accumulate errors
 
           // Mean Sum of Squares (MSS)
           let meanTreatmentSS = finalTreatmentSum / dfTreatment;
@@ -455,11 +455,13 @@
 
           // Insert the ANOVA Table in the location section
           locationSection.insertAdjacentHTML("beforeend", anovaTableHTML);
+
+          console.log(`Location ${i} Error: ${dfError}`); // Console log error per location
         }
         document.getElementById("calculateBtn").disabled = true;
         document.getElementById("summaryBtn").style.display = "block";
-        // Log the total errors for all locations
-        console.log(`The total errors for all locations is: ${totalErrors}`);
+
+        console.log(`Total Error Sum Across All Locations: ${totalErrorsSum}`);
       }
 
       function generateSummaryTable() {
@@ -719,7 +721,6 @@
         document.getElementById("SummaryAnovaResults").innerHTML =
           SummaryAnovaTableHTML;
       }
-      console.log("debargha Nandi2");
     </script>
   </body>
 </html>
