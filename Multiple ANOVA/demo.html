@@ -687,7 +687,7 @@
               <td>TrSS=<br><br><b>${treatmentSumOfSquares.toFixed(2)}</b></td>
               <td><b>(A)→</b>TrSS<hr class="Display_Divided">(Total number of treatments - 1)<br><br><b>${A}</b></td>
               <td>A<hr class="Display_Divided">C<br><br><b>${I}</b></td>
-              <td>(σ²e + Rσ²g)<br><br><b>${A}</b></td>
+              <td>(σ²e + Rσ²g + lσ²g)<br><br><b>${A}</b></td>
             </tr>
             <tr>
               <td><b>Replication (R)</b></td>
@@ -697,7 +697,7 @@
               <td>RSS=<br><br><b>${replicationSumOfSquares.toFixed(2)}</b></td>
               <td><RSS><b>(B)→</b>RSS<hr class="Display_Divided">(Total number of replication - 1)<br><br><b>${B}</b></td>
               <td>B<hr class="Display_Divided">C<br><br><b>${J}</b></td>
-              <td>-</td>
+              <td>(σ²e + σ²gl + gσ²l)</td>
             </tr>
             <tr>
               <td><b>Error (E)</b></td>
@@ -705,7 +705,7 @@
               <td>ESS=<br><br><b>${errorSumOfSquares.toFixed(2)}</b></td>
               <td><b>(C)→</b> RSS<hr class="Display_Divided">Z<br><br><b>${C}</b></td>
               <td>-</td>
-              <td>σ²e=<br><br><b>${C}</b></td>
+              <td>(σ²e + σ²gl)<br><br><b>${C}</b></td>
             </tr>
 
 
