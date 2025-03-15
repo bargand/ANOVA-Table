@@ -42,7 +42,7 @@ function calculateSummaryStats() {
                     <td>--</td>
                     <td>--</td>
                     <td>--</td>
-                    <td>--</td>
+                    <td>2</td>
                 </tr>
             </table>`;
 
