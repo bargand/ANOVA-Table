@@ -41,7 +41,7 @@ function calculateSummaryStats() {
                     <td>--</td>
                     <td>--</td>
                     <td>--</td>
-                    <td>--</td>
+                    <td>4</td>
                     <td>2</td>
                 </tr>
             </table>`;
