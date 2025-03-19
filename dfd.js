@@ -32,7 +32,7 @@ function calculateSummaryStats() {
                     <td><b>Replication (R)</b></td>
                     <td>--</td>
                     <td>--</td>
-                    <td>--</td>
+                    <td>--3</td>
                     <td>--</td>
                     <td>--</td>
                 </tr>
