@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          background-color: #f8f9fa;
+        }
+        .container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 20px;
+        }
+        .location-section {
+          background: white;
+          padding: 15px;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          width: fit-content;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+        }
+        th,
+        td {
+          border: 1px solid black;
+          padding: 8px;
+          text-align: center;
+        }
+        .summary {
+          margin-top: 20px;
+        }
+        .formula-box {
+          border: 1px solid black;
+          padding: 10px;
+          width: 60%;
+          margin: 20px auto;
+          background-color: #f9f9f9;
+        }
+      </style>
+</head>
+<body>
+    <h2>Multiple Location ANOVA</h2>
+    <label for="locationCount">Enter Number of Locations:</label>
+    <input type="number" id="locationCount" min="1" size="5" />
+    <button id="generateInputBtn" onclick="generateInputFields()">
+        Generate Inputs
+      </button>
+      <div id="inputFields"></div>
+    
+</body>
+</html>
