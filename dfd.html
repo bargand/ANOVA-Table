@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta, Title, and Styles -->
+</head>
+<body>
+
+    <h2>Multiple Location ANOVA</h2>
+    
+    <!-- User Input Section -->
+    <label for="locationCount">Enter Number of Locations:</label>
+    <input type="number" id="locationCount" min="1" size="5" />
+    <button id="generateInputBtn" onclick="generateInputFields()">Generate Inputs</button>
+    
+    <div id="inputFields"></div>
+
+    <!-- Single Button to Perform Full Calculation -->
+    <button id="fullCalculateBtn" onclick="performFullCalculation()" style="display: none;">
+        Perform Full ANOVA Calculation
+    </button>
+
+    <div id="tablesContainer"></div>
+    <div id="summaryTableContainer"></div>
+    <div id="SummaryAnovaResults"></div>
+
+    <script>
+        function generateInputFields() {
+            // Generate input fields dynamically for locations
+            // Show "Perform Full ANOVA Calculation" button
+            document.getElementById("fullCalculateBtn").style.display = "block";
+        }
+
+        function performFullCalculation() {
+            generateTables();         // Generate location-wise tables
+            calculateTotals();        // Perform ANOVA calculations
+            generateSummaryTable();   // Generate summary table
+            calculateSummaryStats();  // Compute overall statistics
+        }
+
+        function generateTables() {
+            // Function to generate input tables dynamically
+        }
+
+        function calculateTotals() {
+            // Function to perform ANOVA calculations for each location
+        }
+
+        function generateSummaryTable() {
+            // Function to generate the summary table for all locations
+        }
+
+        function calculateSummaryStats() {
+            // Function to compute summary statistics and display the final ANOVA table
+        }
+    </script>
+
+</body>
+</html>
