@@ -30,7 +30,7 @@ function calculateSummaryStats() {
   console.log(`💡 Using Global Values in Summary Table`);
   console.log(`✅ Pooled Errors Sum: ${totalErrorsSumPooled}`);
   console.log(`✅ Pooled ESS: ${totalESSumPooled.toFixed(2)}`);
-  console.log(`✅ Pooled MSS: ${totalMSSumPooled.toFixed(2)}`);
+  console.log(`✅ Pooled MSS: ${totalMSSumPooled.toFixed(3)}`);
 
   // Compute Treatment Totals and Sum of Squares
   for (let t = 1; t <= maxTreatments; t++) {
