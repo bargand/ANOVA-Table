@@ -85,6 +85,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
+      let globalTotalErrorsSumPooled = 0;
+      let globalTotalESSumPooled = 0;
+      let globalTotalMSSumPooled = 0;
+
       function resetButtons() {
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("generateTablesBtn").disabled = false;
@@ -471,11 +475,15 @@
         document.getElementById("calculateBtn").disabled = true;
         document.getElementById("summaryBtn").style.display = "block";
 
-        console.log(`✅ Total Errors Sum Pooled: ${totalErrorsSumPooled}`);
-        console.log(`✅ Total ESS Pooled: ${totalESSumPooled.toFixed(2)}`);
-        console.log(`✅ Total MSS Pooled: ${totalMSSumPooled.toFixed(2)}`);
+        // console.log(`✅ Total Errors Sum Pooled: ${totalErrorsSumPooled}`);
+        // console.log(`✅ Total ESS Pooled: ${totalESSumPooled.toFixed(2)}`);
+        // console.log(`✅ Total MSS Pooled: ${totalMSSumPooled.toFixed(2)}`);
 
-        return { totalErrorsSumPooled, totalESSumPooled, totalMSSumPooled };
+        // return { totalErrorsSumPooled, totalESSumPooled, totalMSSumPooled };
+
+        globalTotalErrorsSumPooled = totalErrorsSumPooled;
+        globalTotalESSumPooled = totalESSumPooled;
+        globalTotalMSSumPooled = totalMSSumPooled;
       }
 
       function generateSummaryTable() {
@@ -556,14 +564,25 @@
       }
 
       function calculateSummaryStats() {
+        if (globalTotalErrorsSumPooled === 0) {
+          console.warn("Please calculate totals first!");
+          return;
+        }
+
+        // Use the stored global values
+        let totalErrorsSumPooled = globalTotalErrorsSumPooled;
+        let totalESSumPooled = globalTotalESSumPooled;
+        let totalMSSumPooled = globalTotalMSSumPooled;
+
+        console.log("Using precomputed values for summary calculations");
         const locationCount = document.getElementById("locationCount").value;
         let maxTreatments = 0;
         let grandTotal = 0;
         let treatmentTotals = [];
         let sumOfSquares = 0;
 
-        const { totalErrorsSumPooled, totalESSumPooled, totalMSSumPooled } =
-          calculateTotals();
+        // const { totalErrorsSumPooled, totalESSumPooled, totalMSSumPooled } =
+        //   calculateTotals();
 
         // Find max treatments and calculate grand total
         for (let t = 1; t <= locationCount; t++) {
@@ -573,10 +592,10 @@
           maxTreatments = Math.max(maxTreatments, treatCount);
         }
 
-        console.log(`💡 Using Global Values in Summary Table`);
-        console.log(`✅ Pooled Errors Sum: ${totalErrorsSumPooled}`);
-        console.log(`✅ Pooled ESS: ${totalESSumPooled.toFixed(2)}`);
-        console.log(`✅ Pooled MSS: ${totalMSSumPooled.toFixed(2)}`);
+        // console.log(`💡 Using Global Values in Summary Table`);
+        // console.log(`✅ Pooled Errors Sum: ${totalErrorsSumPooled}`);
+        // console.log(`✅ Pooled ESS: ${totalESSumPooled.toFixed(2)}`);
+        // console.log(`✅ Pooled MSS: ${totalMSSumPooled.toFixed(2)}`);
 
         // Compute Treatment Totals and Sum of Squares
         for (let t = 1; t <= maxTreatments; t++) {
@@ -738,7 +757,7 @@
           generateExcel();
         });
 
-        function generatePDF() {
+      function generatePDF() {
         const { jsPDF } = window.jspdf;
         let doc = new jsPDF({
           orientation: "portrait",
@@ -759,22 +778,22 @@
           let position = 0;
 
           // Function to add gray transparent header text
-          function addHeader(doc) {
-            doc.setTextColor(200, 200, 200); // Light gray color
-            doc.setFontSize(16);
-            doc.setFont("helvetica", "bold");
-            doc.text("BARGAND", 5, 10, { opacity: 0.5 }); // Top-left corner, semi-transparent
-          }
+          // function addHeader(doc) {
+          //   doc.setTextColor(200, 200, 200); // Light gray color
+          //   doc.setFontSize(16);
+          //   doc.setFont("helvetica", "bold");
+          //   doc.text("BARGAND", 5, 10, { opacity: 0.5 }); // Top-left corner, semi-transparent
+          // }
 
           doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-          addHeader(doc); // Add header on first page
+          // addHeader(doc); // Add header on first page
           heightLeft -= pageHeight;
 
           while (heightLeft > 0) {
             position = heightLeft - imgHeight;
             doc.addPage();
             doc.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-            addHeader(doc); // Add header on each new page
+            // addHeader(doc); // Add header on each new page
             heightLeft -= pageHeight;
           }
 
