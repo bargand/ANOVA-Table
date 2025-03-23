@@ -4,44 +4,202 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Multiple Location ANOVA</title>
+    <!-- Add Font Awesome for the download icon -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
+      /* General Styles */
       body {
         font-family: Arial, sans-serif;
-        margin: 20px;
-        background-color: #f8f9fa;
+        margin: 0;
+        padding: 20px;
+        background-color: #031b1b; /* Dark background */
+        color: #d1d1d1; /* Light text color */
+        line-height: 1.6;
       }
+
+      h2 {
+        color: #2cc197; /* Accent color for headings */
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 10px;
+        color: #d1d1d1;
+        font-weight: bold;
+      }
+
+      input[type="number"] {
+        padding: 8px;
+        border: 1px solid #178e58; /* Green border */
+        border-radius: 4px;
+        background-color: #052323; /* Darker background */
+        color: #d1d1d1; /* Light text */
+        width: 100%;
+        max-width: 200px;
+        margin-bottom: 15px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #2cc197; /* Accent color for buttons */
+        color: #031b1b; /* Dark text for buttons */
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px 0;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #178e58; /* Darker green on hover */
+      }
+
+      button:disabled {
+        background-color: #04634d; /* Disabled button color */
+        cursor: not-allowed;
+      }
+
       .container {
         display: flex;
         flex-wrap: wrap;
         gap: 20px;
+        justify-content: center;
+        margin-top: 20px;
       }
+
       .location-section {
-        background: white;
-        padding: 15px;
+        background: #052323; /* Darker background for sections */
+        padding: 20px;
         border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        width: fit-content;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        width: 100%;
+        max-width: 400px; /* Limit width for better readability */
       }
+
       table {
         width: 100%;
         border-collapse: collapse;
         margin-top: 10px;
       }
+
       th,
       td {
-        border: 1px solid black;
-        padding: 8px;
+        border: 1px solid #178e58; /* Green border for table cells */
+        padding: 10px;
         text-align: center;
+        color: #d1d1d1; /* Light text color */
       }
-      .summary {
+
+      th {
+        background-color: #04634d; /* Dark green for table headers */
+      }
+
+      .formula-box {
+        border: 1px solid #178e58;
+        padding: 15px;
+        margin: 20px 0;
+        background-color: #052323;
+        border-radius: 8px;
+      }
+
+      .formula-box p {
+        margin: 5px 0;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .location-section {
+          width: 90%; /* Full width on smaller screens */
+        }
+
+        input[type="number"] {
+          max-width: 100%; /* Full width for inputs on mobile */
+        }
+
+        button {
+          width: 100%; /* Full width for buttons on mobile */
+        }
+      }
+
+      @media (max-width: 480px) {
+        h2 {
+          font-size: 1.5rem; /* Smaller heading on very small screens */
+        }
+
+        .location-section {
+          padding: 15px;
+        }
+
+        th,
+        td {
+          padding: 8px; /* Smaller padding for table cells */
+        }
+      }
+
+      /* Additional Styling for Better UX */
+      #inputFields {
+        margin-bottom: 20px;
+      }
+
+      #tablesContainer {
+        margin-bottom: 20px;
+      }
+
+      #summaryTableContainer,
+      #SummaryAnovaResults {
         margin-top: 20px;
       }
-      .formula-box {
-        border: 1px solid black;
-        padding: 10px;
-        width: 60%;
-        margin: 20px auto;
-        background-color: #f9f9f9;
+
+      .summary {
+        margin-top: 15px;
+      }
+
+      .summary p {
+        margin: 5px 0;
+        color: #d1d1d1;
+      }
+
+      .summary strong {
+        color: #2cc197; /* Accent color for strong text */
+      }
+
+      /* Floating Download Button */
+      #downloadBtn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background-color: #2cc197; /* Accent color */
+        color: #031b1b; /* Dark text */
+        border-radius: 50%; /* Circular button */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+      }
+
+      #downloadBtn:hover {
+        background-color: #178e58; /* Darker green on hover */
+        transform: scale(1.1); /* Slightly enlarge on hover */
+      }
+
+      #downloadBtn i {
+        margin-right: 0; /* Remove margin for the icon */
       }
     </style>
   </head>
@@ -78,7 +236,10 @@
     <div id="summaryTableContainer"></div>
     <div id="SummaryAnovaResults"></div>
 
-    <button id="downloadBtn">Download Now</button>
+    <!-- Floating Download Button -->
+    <button id="downloadBtn">
+      <i class="fa fa-download" aria-hidden="true"></i>
+    </button>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
