@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ANOVA Statistical Calculator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary: #2cc197;
+      --primary-dark: #178e58;
+      --primary-light: #e0f7f1;
+      --dark-bg: #031b1b;
+      --darker-bg: #021414;
+      --card-bg: #052323;
+      --text-light: #f0f0f0;
+      --text-muted: #a0a0a0;
+      --border-radius: 8px;
+      --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--dark-bg);
+      color: var(--text-light);
+      line-height: 1.6;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header Styles */
+    header {
+      background-color: var(--darker-bg);
+      padding: 1rem 2rem;
+      box-shadow: var(--box-shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo i {
+      color: var(--primary);
+      font-size: 1.5rem;
+    }
+
+    .logo h1 {
+      font-size: 1.3rem;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Main Content Layout */
+    .app-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .app-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .app-header h2 {
+      color: var(--primary);
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .app-header p {
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    /* Stepper Navigation */
+    .stepper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      min-width: 100px;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--card-bg);
+      color: var(--text-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      border: 2px solid var(--primary);
+      transition: var(--transition);
+    }
+
+    .step.active .step-number {
+      background-color: var(--primary);
+      color: var(--dark-bg);
+    }
+
+    .step.completed .step-number {
+      background-color: var(--primary-dark);
+      color: white;
+    }
+
+    .step-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .step.active .step-label {
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--primary);
+      border-radius: var(--border-radius);
+      background-color: var(--card-bg);
+      color: var(--text-light);
+      font-size: 1rem;
+      transition: var(--transition);
+      max-width: 300px;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(44, 193, 151, 0.2);
+    }
+
+    /* Button Styles */
+    .btn {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary);
+      color: var(--dark-bg);
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--box-shadow);
+    }
+
+    .btn:disabled {
+      background-color: #04634d;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+      opacity: 0.7;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(44, 193, 151, 0.1);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    /* Card Layouts */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      box-shadow: var(--box-shadow);
+      margin-bottom: 2rem;
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(44, 193, 151, 0.2);
+    }
+
+    .card-title {
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border: 1px solid var(--primary);
+      padding: 0.75rem;
+      text-align: center;
+    }
+
+    th {
+      background-color: rgba(44, 193, 151, 0.2);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    td input[type="number"] {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid rgba(44, 193, 151, 0.5);
+      border-radius: 4px;
+      background-color: rgba(44, 193, 151, 0.1);
+      color: var(--text-light);
+      text-align: center;
+    }
+
+    /* Formula Boxes */
+    .formula-box {
+      background-color: rgba(44, 193, 151, 0.1);
+      border-left: 4px solid var(--primary);
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    }
+
+    .formula-title {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .formula-item {
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: baseline;
+    }
+
+    .formula-item strong {
+      color: var(--primary-light);
+      min-width: 120px;
+      display: inline-block;
+    }
+
+    /* Results Section */
+    .results-summary {
+      background-color: rgba(44, 193, 151, 0.05);
+      border: 1px solid var(--primary);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .results-title {
+      color: var(--primary);
+      margin-bottom: 1rem;
+      font-size: 1.3rem;
+    }
+
+    /* Floating Action Button */
+    .fab {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: var(--primary);
+      color: var(--dark-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--box-shadow);
+      cursor: pointer;
+      transition: var(--transition);
+      z-index: 99;
+      border: none;
+    }
+
+    .fab:hover {
+      background-color: var(--primary-dark);
+      transform: scale(1.1);
+    }
+
+    /* Utility Classes */
+    .text-primary {
+      color: var(--primary);
+    }
+
+    .text-muted {
+      color: var(--text-muted);
+    }
+
+    .mt-1 { margin-top: 0.5rem; }
+    .mt-2 { margin-top: 1rem; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mt-4 { margin-top: 2rem; }
+    .mb-1 { margin-bottom: 0.5rem; }
+    .mb-2 { margin-bottom: 1rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .mb-4 { margin-bottom: 2rem; }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .app-container {
+        padding: 1rem;
+      }
+
+      .stepper {
+        gap: 0.5rem;
+      }
+
+      .step {
+        min-width: 80px;
+      }
+
+      .step-label {
+        font-size: 0.8rem;
+      }
+
+      .card {
+        padding: 1rem;
+      }
+
+      th, td {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+      }
+
+      .fab {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        bottom: 1rem;
+        right: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 1rem;
+      }
+
+      .logo h1 {
+        font-size: 1.1rem;
+      }
+
+      .app-header h2 {
+        font-size: 1.4rem;
+      }
+
+      .form-control {
+        max-width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
+
+      .step-number {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--card-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <i class="fas fa-calculator"></i>
+      <h1>ANOVA Pro</h1>
+    </div>
+    <div class="text-muted">Statistical Analysis Tool</div>
+  </header>
+
+  <div class="app-container">
+    <div class="app-header">
+      <h2>Multi-Location ANOVA Calculator</h2>
+      <p>Perform analysis of variance across multiple locations with this comprehensive statistical tool</p>
+    </div>
+
+    <!-- Stepper Navigation -->
+    <div class="stepper">
+      <div class="step active" id="step1">
+        <div class="step-number">1</div>
+        <div class="step-label">Setup Locations</div>
+      </div>
+      <div class="step" id="step2">
+        <div class="step-number">2</div>
+        <div class="step-label">Enter Data</div>
+      </div>
+      <div class="step" id="step3">
+        <div class="step-number">3</div>
+        <div class="step-label">Calculate</div>
+      </div>
+      <div class="step" id="step4">
+        <div class="step-number">4</div>
+        <div class="step-label">Results</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Location Setup -->
+    <div class="card fade-in" id="setupCard">
+      <div class="card-header">
+        <h3 class="card-title">Experiment Setup</h3>
+        <i class="fas fa-flask text-primary"></i>
+      </div>
+      <div class="form-group">
+        <label for="locationCount" class="form-label">Number of Locations</label>
+        <input
+          type="number"
+          id="locationCount"
+          min="1"
+          class="form-control"
+          placeholder="e.g. 3"
+          oninput="resetButtons()"
+        />
+        <small class="text-muted">Enter how many different locations your experiment includes</small>
+      </div>
+      <div class="btn-group">
+        <button id="nextBtn" class="btn" onclick="generateInputFields()">
+          <i class="fas fa-arrow-right"></i> Continue
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Location Details -->
+    <div class="card fade-in" id="locationDetailsCard" style="display: none;">
+      <div class="card-header">
+        <h3 class="card-title">Location Specifications</h3>
+        <i class="fas fa-map-marker-alt text-primary"></i>
+      </div>
+      <div id="inputFields"></div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="backToSetup()">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button id="generateTablesBtn" class="btn" onclick="generateTables()">
+          <i class="fas fa-table"></i> Create Data Tables
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Data Tables -->
+    <div class="card fade-in" id="dataTablesCard" style="display: none;">
+      <div class="card-header">
+        <h3 class="card-title">Experimental Data</h3>
+        <i class="fas fa-database text-primary"></i>
+      </div>
+      <div class="container" id="tablesContainer"></div>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="backToDetails()">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <button id="calculateBtn" class="btn" onclick="calculateTotals()">
+          <i class="fas fa-calculator"></i> Calculate ANOVA
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 4: Results -->
+    <div id="resultsSection" style="display: none;">
+      <div class="card fade-in">
+        <div class="card-header">
+          <h3 class="card-title">ANOVA Results</h3>
+          <i class="fas fa-chart-bar text-primary"></i>
+        </div>
+        <div id="summaryTableContainer"></div>
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="backToTables()">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <button id="summaryBtn" class="btn" onclick="generateSummaryTable()">
+            <i class="fas fa-file-alt"></i> Generate Full Report
+          </button>
+        </div>
+      </div>
+
+      <div class="card fade-in" id="fullReportCard" style="display: none;">
+        <div class="card-header">
+          <h3 class="card-title">Comprehensive Analysis</h3>
+          <i class="fas fa-file-alt text-primary"></i>
+        </div>
+        <div id="summaryStatsContainer"></div>
+        <div id="SummaryAnovaResults"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <button class="fab" id="downloadBtn" title="Download Results">
+    <i class="fas fa-download"></i>
+  </button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+  <script>
+    // Your existing JavaScript code goes here with the following additions:
+
+    // Update stepper navigation
+    function updateStepper(activeStep) {
+      const steps = document.querySelectorAll('.step');
+      steps.forEach((step, index) => {
+        step.classList.remove('active', 'completed');
+        if (index + 1 < activeStep) {
+          step.classList.add('completed');
+        } else if (index + 1 === activeStep) {
+          step.classList.add('active');
+        }
+      });
+    }
+
+    // Navigation functions
+    function backToSetup() {
+      document.getElementById('setupCard').style.display = 'block';
+      document.getElementById('locationDetailsCard').style.display = 'none';
+      updateStepper(1);
+    }
+
+    function backToDetails() {
+      document.getElementById('locationDetailsCard').style.display = 'block';
+      document.getElementById('dataTablesCard').style.display = 'none';
+      updateStepper(2);
+    }
+
+    function backToTables() {
+      document.getElementById('dataTablesCard').style.display = 'block';
+      document.getElementById('resultsSection').style.display = 'none';
+      updateStepper(3);
+    }
+
+    // Modified existing functions to update stepper
+    function generateInputFields() {
+      // ... existing code ...
+      document.getElementById('setupCard').style.display = 'none';
+      document.getElementById('locationDetailsCard').style.display = 'block';
+      updateStepper(2);
+    }
+
+    function generateTables() {
+      // ... existing code ...
+      document.getElementById('locationDetailsCard').style.display = 'none';
+      document.getElementById('dataTablesCard').style.display = 'block';
+      updateStepper(3);
+    }
+
+    function calculateTotals() {
+      // ... existing code ...
+      document.getElementById('dataTablesCard').style.display = 'none';
+      document.getElementById('resultsSection').style.display = 'block';
+      updateStepper(4);
+    }
+
+    function generateSummaryTable() {
+      // ... existing code ...
+      document.getElementById('fullReportCard').style.display = 'block';
+    }
+
+    // Rest of your existing JavaScript functions...
+    // [All your existing JavaScript code remains unchanged]
+    
+    // Initialize the stepper
+    updateStepper(1);
+  </script>
+</body>
+</html>
