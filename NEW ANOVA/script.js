@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Current design type (default: CRD)
   let currentDesign = "CRD";
 
-  // Set up design type buttons
+  // Set up design type buttonsf
   designBtns.forEach((btn) => {
     btn.addEventListener("click", function () {
       designBtns.forEach((b) => b.classList.remove("active"));
